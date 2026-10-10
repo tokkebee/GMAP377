@@ -12,7 +12,7 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private float lookSpeed;
     [SerializeField] private float gravity;
     [SerializeField] private float jumpForce;
-    private float vertSpeed;
+    private float _vertSpeed;
     private Vector2 _lookDir;
     private Vector3 _movement;
     private Vector2 _lookInput;
@@ -45,7 +45,7 @@ public class BasicMovement : MonoBehaviour
             float moveForwards = _moveInput.y * speed * Time.deltaTime;
             float moveSide = _moveInput.x * speed * Time.deltaTime;
             _movement = (transform.forward*moveForwards)+(transform.right*moveSide)
-                +vertSpeed*transform.up;
+                +_vertSpeed*transform.up;
             charCon.Move(_movement);
         }
         
@@ -55,14 +55,14 @@ public class BasicMovement : MonoBehaviour
     {
         if (charCon.isGrounded) 
         {
-            vertSpeed = 0f;
-            vertSpeed += InputSystem.actions["Jump"].ReadValue<float>()*jumpForce;
+            _vertSpeed = 0f;
+            _vertSpeed += InputSystem.actions["Jump"].ReadValue<float>()*jumpForce;
         }
         else
         {
-            vertSpeed -= gravity * Time.deltaTime;
+            _vertSpeed -= gravity * Time.deltaTime;
         }
-        return vertSpeed;
+        return _vertSpeed;
     }
     
     void CameraManagement()
@@ -77,17 +77,5 @@ public class BasicMovement : MonoBehaviour
             playerCam.transform.localRotation = Quaternion.Euler(_lookDir.y, 0f, 0f);
         }
     }
-
-    public void MenuInteraction(bool interacting)
-    {
-        menuInteracting = interacting;
-        if (interacting)
-        {
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-        }
-    }
+    
 }

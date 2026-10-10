@@ -151,6 +151,7 @@ GameObject:
   - component: {fileID: 3555188677059482662}
   - component: {fileID: 5852524354757834611}
   - component: {fileID: 103849064441575424}
+  - component: {fileID: 538943397703365213}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -291,13 +292,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3614fe844d38a6e409559c7e57eac6ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicMovement
+  playerCam: {fileID: 7801202687797992425}
   menuInteracting: 0
   charCon: {fileID: 0}
-  playerCam: {fileID: 7801202687797992425}
   walkSpeed: 5
   runSpeed: 10
   lookSpeed: 5
-  lookDir: {x: 0, y: 0}
   gravity: 1.2
-  vertSpeed: 0
   jumpForce: 0.3
+--- !u!114 &538943397703365213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3685840249312572578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8db8336b52869a94183d54257c024783, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionPrepper
+  highlightedObject: {fileID: 0}
+  selectDist: 5
+  selectMat: {fileID: 0}
+  cam: {fileID: 0}
+  lookDir: {x: 0, y: 0, z: 0}
+  selectableTags:
+  - Screens
