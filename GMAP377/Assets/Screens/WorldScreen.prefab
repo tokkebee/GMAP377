@@ -51,6 +51,10 @@ MonoBehaviour:
   outputCamera: {fileID: 7408774501354289950}
   mouseOver: {fileID: 0}
   screenCanvas: {fileID: 3792932806293297607}
+  screenObj: {fileID: 0}
+  onMat: {fileID: 2100000, guid: 9ccb759b9060c714da183a868302eb0a, type: 2}
+  offMat: {fileID: 2100000, guid: bec4f84b963cec74bad7fb6c0d16b887, type: 2}
+  onDistance: 7
 --- !u!1 &2668294198670350925
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,7 +182,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3600508294194652724}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
