@@ -43,7 +43,7 @@ public class InteractionPrepper : MonoBehaviour
                 highlightedObject.transform.parent.GetComponent<ScreenScript>().ScreenMouseOver(hit.textureCoord);
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0)) //Left click down
             {
                 switch (highlightedObject.tag)
                 {
@@ -56,10 +56,15 @@ public class InteractionPrepper : MonoBehaviour
                         break;
                 }
             }
-            else if (Input.GetMouseButtonUp(0))
+            else if (Input.GetMouseButtonUp(0)) //Left Click Up
             {
-                ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
-                highlightedObject.SendMessage("Up",screen.mouseOver);
+                switch (highlightedObject.tag)
+                {
+                    case "Screen":
+                        ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
+                        highlightedObject.SendMessage("Up",screen.mouseOver);
+                        break;
+                }
             }
         }
         else
