@@ -23,14 +23,13 @@ public class Monster : MonoBehaviour
         //highest to lowest priority: chase --> investigate --> patrol
 
         //priority 30: chase when player is visible
-        Sequence chase = new Sequence("Chase", 30);
+        ReactiveSequence  chase = new ReactiveSequence ("Chase", 30);
         chase.AddChild(new Leaf("ShouldChase",
             new Condition(() =>
             {
                 bool shouldInvestigate =
                     vision.shouldChase &&
-                    vision.canSeePlayer &&
-                    vision.hasLastKnownPosition;
+                    vision.canSeePlayer;
 
                 if (vision.shouldChase)
                     Debug.Log("Monster entering chasing behavior");

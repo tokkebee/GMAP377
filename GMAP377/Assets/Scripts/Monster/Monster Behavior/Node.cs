@@ -35,6 +35,26 @@ namespace Pathfinding.BehaviourTrees {
         }
     }
 
+    //rechecks all children from beginning of each tick
+    public class ReactiveSequence : Node {
+        public ReactiveSequence(string name, int priority = 0) : base(name, priority) { }
+
+        public override Status Process() {
+            foreach (var child in children) {
+                switch (child.Process()) {
+                    case Status.Failure:
+                        Reset();
+                        return Status.Failure;
+                    case Status.Running:
+                        return Status.Running;
+                }
+            }
+
+            Reset();
+            return Status.Success;
+        }
+    }
+
     public class RandomSelector : PrioritySelector {
         protected override List<Node> SortChildren() =>children.Shuffle().ToList();
 
@@ -93,6 +113,7 @@ namespace Pathfinding.BehaviourTrees {
         }
     }
     
+    //remembers current child between ticks
     public class Sequence : Node {
         public Sequence(string name, int priority = 0) : base(name, priority) { }
 
