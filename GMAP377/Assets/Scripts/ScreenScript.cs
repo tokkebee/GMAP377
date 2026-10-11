@@ -48,6 +48,8 @@ public class ScreenScript : MonoBehaviour
             if (screenObj.material != onMat)
             {
                 screenObj.material = onMat;
+                foreach (Transform child in transform)
+                    child.gameObject.SetActive(true);
             }
         }
         else
@@ -55,6 +57,14 @@ public class ScreenScript : MonoBehaviour
             if (screenObj.material != offMat)
             {
                 screenObj.material = offMat;
+                foreach (Transform screenChild in transform)
+                {
+                    if (screenChild!=screenObj.transform)
+                    {
+                        screenChild.gameObject.SetActive(false);
+                    }
+                }
+                   
             }
         }
     }
@@ -74,6 +84,10 @@ public class ScreenScript : MonoBehaviour
         if (coveredUI.Count > 0)
         {
             mouseOver = coveredUI[0].gameObject;
+        }
+        else
+        {
+            mouseOver = null;
         }
     }
 }

@@ -17,13 +17,19 @@ public class #SCRIPTNAME# : MonoBehaviour
         _mouseFollow = _screen.mouseFollow;
     }
 
-    public void Down(GameObject over)
+    public void Down(GameObject over = null)
     {//Left Click Down
-        Debug.Log($"Click - {over}");
+        if (over != null)
+        {
+            Debug.Log($"Click - {over}");
+        }
     }
 
-    public void Up(GameObject over)
+    public void Up(GameObject over = null)
     {
-        Debug.Log($"Up - {over}");
+        if (over != null)
+        {
+            Debug.Log($"Up - {over}");
+        }    
     }
 }

@@ -17,14 +17,20 @@ public class DemoScreen : MonoBehaviour
         _mouseFollow = _screen.mouseFollow;
     }
 
-    public void Down(GameObject over)
+    public void Down(GameObject over = null)
     {//Left Click Down
-        over.transform.parent = _mouseFollow;
+        if (over != null)
+        {
+            over.transform.parent = _mouseFollow;
+        }
     }
 
-    public void Up(GameObject over)
+    public void Up(GameObject over = null)
     {
-        over.transform.parent = _screen.screenCanvas.transform;
-        _mouseFollow.SetAsLastSibling();
+        if (over != null)
+        {
+            over.transform.parent = _screen.screenCanvas.transform;
+            _mouseFollow.SetAsLastSibling(); 
+        }
     }
 }
