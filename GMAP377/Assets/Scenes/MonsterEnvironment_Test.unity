@@ -2361,7 +2361,7 @@ PrefabInstance:
       objectReference: {fileID: 1465105556}
     - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
       propertyPath: lookSpeed
-      value: 75
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
       propertyPath: selectMat
