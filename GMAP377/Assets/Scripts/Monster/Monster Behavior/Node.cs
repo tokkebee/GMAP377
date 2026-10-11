@@ -156,14 +156,27 @@ namespace Pathfinding.BehaviourTrees {
     public class BehaviourTree : Node {
         public BehaviourTree(string name) : base(name) { }
         public override Status Process() {
-            while (currentChild < children.Count) {
-                var status = children[currentChild].Process();
-                if (status != Status.Success) {
-                    return status;
-                }
-                currentChild++;
+            if (children.Count == 0) {
+                return Status.Failure;
             }
-            return Status.Success;
+
+            Status status = children[0].Process();
+
+            if (status != Status.Running) {
+                Reset();
+            }
+
+            return status;
+
+            // //old method gets stuck after first successful run
+            // while (currentChild < children.Count) {
+            //     var status = children[currentChild].Process();
+            //     if (status != Status.Success) {
+            //         return status;
+            //     }
+            //     currentChild++;
+            // }
+            // return Status.Success;
         }
     }
 }
