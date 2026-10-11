@@ -10,6 +10,9 @@ public class MonsterVision : MonoBehaviour {
     public bool hasLastKnownPosition { get; private set; }
     public Vector3 lastKnownPosition { get; private set; }
 
+    [SerializeField] private Transform eyePoint;
+    [SerializeField] private LayerMask obstacleMask;
+
     private bool inCentralVision;
     private bool inPeripheralVision;
 
@@ -26,6 +29,20 @@ public class MonsterVision : MonoBehaviour {
         }
 
         UpdateVisibility();
+    }
+
+    private bool HasLineOfSight() {
+        if (player == null || eyePoint == null) {
+            return false;
+        }
+
+        Vector3 direction = player.transform.position - eyePoint.position;
+
+        if (Physics.Raycast(eyePoint.position, direction.normalized, out RaycastHit hit, direction.magnitude, obstacleMask)) {
+            return false;
+        }
+
+        return true;
     }
 
     public void ExitVision(VisionZone.VisionType type) {
@@ -60,7 +77,7 @@ public class MonsterVision : MonoBehaviour {
     }
 
     private void UpdateVisibility() {
-        canSeePlayer = inCentralVision || inPeripheralVision;
+        canSeePlayer = (inCentralVision || inPeripheralVision) && HasLineOfSight();
     }
 
     private void UpdateLastKnownPosition() {
