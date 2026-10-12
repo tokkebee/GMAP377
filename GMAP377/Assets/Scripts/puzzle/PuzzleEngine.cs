@@ -43,7 +43,7 @@ public class PuzzleEngine : MonoBehaviour
     {
         line = screenCanvas.GetComponent<LineRenderer>();
         line.useWorldSpace = false;                                  // cell positions are world space
-        line.startWidth = line.endWidth = cellSize * 0.01f;         // scene value (1) is far wider than a cell
+        line.startWidth = line.endWidth = cellSize * 0.005f;         // scene value (1) is far wider than a cell
         if (line.sharedMaterial == null)
         {
             var shader = Shader.Find("Sprites/Default") ?? Shader.Find("Universal Render Pipeline/Unlit");
