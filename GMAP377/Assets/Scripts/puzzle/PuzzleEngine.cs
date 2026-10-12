@@ -29,18 +29,21 @@ public class PuzzleEngine : MonoBehaviour
     [SerializeField] private TMP_Text hudText;
 
     private static readonly string[] Operations = { "+", "-", "*", "/" };
-
     private string[,] board;
     private readonly List<Vector2Int> path = new List<Vector2Int>();
     private LineRenderer line;
     private string equation = "";
     private bool isDragging, gameWon;
+    
+    [SerializeField] private ScreenScript screen;
+    [SerializeField] private Canvas screenCanvas;
+ 
 
     void Awake()
     {
-        line = GetComponent<LineRenderer>();
-        line.useWorldSpace = true;                                  // cell positions are world space
-        line.startWidth = line.endWidth = cellSize * 0.5f;         // scene value (1) is far wider than a cell
+        line = screenCanvas.GetComponent<LineRenderer>();
+        line.useWorldSpace = false;                                  // cell positions are world space
+        line.startWidth = line.endWidth = cellSize * 0.01f;         // scene value (1) is far wider than a cell
         if (line.sharedMaterial == null)
         {
             var shader = Shader.Find("Sprites/Default") ?? Shader.Find("Universal Render Pipeline/Unlit");
@@ -75,15 +78,15 @@ public class PuzzleEngine : MonoBehaviour
             {
                 var tile = new GameObject($"Tile {c},{r}", typeof(RectTransform));
                 tile.layer = gameObject.layer;
-                tile.transform.SetParent(transform, false);
-                tile.transform.localPosition = new Vector3(c * cellSize, 0f, (rows - 1 - r) * cellSize);
+                tile.transform.SetParent(screenCanvas.transform, false);
+                tile.transform.localPosition = new Vector3(c * cellSize, (rows - 1 - r) * cellSize, 0f);
  
                 tile.transform.rotation = puzzleCamera != null ? puzzleCamera.transform.rotation : Quaternion.Euler(90f, 0f, 0f);
 
-                var text = tile.AddComponent<TextMeshPro>();
+                var text = tile.AddComponent<TextMeshProUGUI>();
                 text.rectTransform.sizeDelta = new Vector2(cellSize, cellSize);
                 text.alignment = TextAlignmentOptions.Center;
-                text.fontSize = cellSize * 8f;
+                text.fontSize = cellSize;
 
                 tile.AddComponent<GridTileVisual>().SetupTile(board[c, r], new Vector2Int(c, r) == exitPos);
             }
@@ -92,7 +95,10 @@ public class PuzzleEngine : MonoBehaviour
 
 
     private Vector3 CellToWorld(Vector2Int cell) =>
-        transform.position + new Vector3(cell.x * cellSize, 0f, (rows - 1 - cell.y) * cellSize);
+        GameObject.Find($"Tile {cell.x},{cell.y}").GetComponent<RectTransform>().anchoredPosition;
+        //transform.position + new Vector3(cell.x * cellSize, 0f, (rows - 1 - cell.y) * cellSize);
+        
+        
 
     private Vector2Int WorldToCell(Vector3 world) =>
         new Vector2Int(Mathf.RoundToInt((world.x - transform.position.x) / cellSize),
@@ -105,24 +111,42 @@ public class PuzzleEngine : MonoBehaviour
         cell = default;
         Camera view = ViewCamera;
         if (view == null || Pointer.current == null) return false;
+        // Ray ray = view.ScreenPointToRay(screen.mouseFollow.position);
+        // if (!new Plane(Vector3.up, transform.position).Raycast(ray, out float distance)) return false;
+        // cell = WorldToCell(ray.GetPoint(distance));
+        // return true;
 
-        Ray ray = view.ScreenPointToRay(Pointer.current.position.ReadValue());
-        if (!new Plane(Vector3.up, transform.position).Raycast(ray, out float distance)) return false;
-
-        cell = WorldToCell(ray.GetPoint(distance));
+        if (!screen.mouseOver) return false;
+        string name = screen.mouseOver.name;
+        if (!name.Contains(',')) return false;
+        int vecIndex = name.IndexOf(',');
+        int x = name[vecIndex - 1];
+        int y = name[vecIndex + 1];
+        cell = new Vector2Int(x-48, y-48);
+        Debug.Log(cell);
         return true;
     }
 
     
-    private Camera ViewCamera => Camera.main != null ? Camera.main : puzzleCamera;
-
+    //private Camera ViewCamera => Camera.main != null ? Camera.main : puzzleCamera;
+    private Camera ViewCamera => puzzleCamera != null ? puzzleCamera : Camera.main;
     
-    public void HandleInput(InputAction.CallbackContext context)
-    {
-        if (gameWon) return;
+    
+    // public void HandleInput(InputAction.CallbackContext context)
+    // {
+    //     if (gameWon) return;
+    //
+    //     if (context.performed) BeginPath();
+    //     else if (context.canceled) EndPath();
+    // }
 
-        if (context.performed) BeginPath();
-        else if (context.canceled) EndPath();
+    public void Down()
+    {
+        if (!gameWon) BeginPath();
+    }
+    public void Up()
+    {
+        if (!gameWon) EndPath();
     }
 
     void Update()

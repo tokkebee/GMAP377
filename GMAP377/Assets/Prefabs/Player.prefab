@@ -297,7 +297,7 @@ MonoBehaviour:
   charCon: {fileID: 0}
   walkSpeed: 5
   runSpeed: 10
-  lookSpeed: 5
+  lookSpeed: 10
   gravity: 1.2
   jumpForce: 0.3
 --- !u!114 &538943397703365213
@@ -314,8 +314,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractionPrepper
   highlightedObject: {fileID: 0}
   selectDist: 5
-  selectMat: {fileID: 0}
+  selectMat: {fileID: 2100000, guid: 3c6c633f0e6d73546bf082baddf6c9fa, type: 2}
   cam: {fileID: 0}
   lookDir: {x: 0, y: 0, z: 0}
   selectableTags:
-  - Screens
+  - Screen
+  - Pickup

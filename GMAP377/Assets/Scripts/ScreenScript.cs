@@ -81,13 +81,6 @@ public class ScreenScript : MonoBehaviour
         PointerEventData pointerData = new PointerEventData(_eventSystem){position = mouseFollowPosition};
         List<RaycastResult> coveredUI = new List<RaycastResult>();
         _screenRay.Raycast(pointerData, coveredUI);
-        if (coveredUI.Count > 0)
-        {
-            mouseOver = coveredUI[0].gameObject;
-        }
-        else
-        {
-            mouseOver = null;
-        }
+        mouseOver = (coveredUI.Count > 0) ? coveredUI[0].gameObject : null;
     }
 }

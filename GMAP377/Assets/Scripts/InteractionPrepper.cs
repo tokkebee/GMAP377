@@ -25,6 +25,7 @@ public class InteractionPrepper : MonoBehaviour
         cam = movement.playerCam;
         Cursor.lockState = CursorLockMode.Locked;
     }
+    
     void Update()
     {
         RaycastHit hit;
@@ -34,14 +35,10 @@ public class InteractionPrepper : MonoBehaviour
             selectableTags.Contains(hit.collider.tag))
         {
             if (hit.collider.gameObject != highlightedObject)
-            {
                 SelectObject(hit.collider.gameObject);
-            }
 
             if (highlightedObject.CompareTag("Screen"))
-            {
                 highlightedObject.transform.parent.GetComponent<ScreenScript>().ScreenMouseOver(hit.textureCoord);
-            }
 
             if (Input.GetMouseButtonDown(0)) //Left click down
             {
