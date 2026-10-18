@@ -1,7 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using TMPro;
+using Unity.Mathematics;
+using Unity.Multiplayer.Center.Common;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 
 [RequireComponent(typeof(LineRenderer))]
@@ -43,13 +51,14 @@ public class PuzzleEngine : MonoBehaviour
     {
         line = screenCanvas.GetComponent<LineRenderer>();
         line.useWorldSpace = false;                                  // cell positions are world space
-        line.startWidth = line.endWidth = cellSize * 0.01f;         // scene value (1) is far wider than a cell
+        line.startWidth = line.endWidth = cellSize * 0.005f;         // scene value (1) is far wider than a cell
         if (line.sharedMaterial == null)
         {
             var shader = Shader.Find("Sprites/Default") ?? Shader.Find("Universal Render Pipeline/Unlit");
             if (shader != null) line.material = new Material(shader);
         }
-
+        GenerateRandomPuzzle();
+        
         BuildBoard();
         BuildTiles();
         UpdateHud();
@@ -73,13 +82,16 @@ public class PuzzleEngine : MonoBehaviour
 
     private void BuildTiles()
     {
+        Vector2 centerOffSet = new Vector2();
+        centerOffSet.x = 500 - cellSize * columns;
+        centerOffSet.y = 500 - cellSize * rows;
         for (int c = 0; c < columns; c++)
             for (int r = 0; r < rows; r++)
             {
                 var tile = new GameObject($"Tile {c},{r}", typeof(RectTransform));
                 tile.layer = gameObject.layer;
                 tile.transform.SetParent(screenCanvas.transform, false);
-                tile.transform.localPosition = new Vector3(c * cellSize, (rows - 1 - r) * cellSize, 0f);
+                tile.transform.localPosition = new Vector3(c * cellSize + centerOffSet.x, (rows - 1 - r) * cellSize + centerOffSet.y, 0f);
  
                 tile.transform.rotation = puzzleCamera != null ? puzzleCamera.transform.rotation : Quaternion.Euler(90f, 0f, 0f);
 
@@ -158,7 +170,7 @@ public class PuzzleEngine : MonoBehaviour
     private void BeginPath()
     {
         if (!PointerCell(out Vector2Int cell)) return;
-        if (cell != Vector2Int.zero) return; 
+        //if (cell != Vector2Int.zero) return; 
 
         path.Clear();
         path.Add(cell);
@@ -294,4 +306,168 @@ public class PuzzleEngine : MonoBehaviour
     private void UpdateHud() => SetHud(equation == ""
         ? $"Target {targetAnswer}   |   drag from the top-left cell"
         : $"Target {targetAnswer}   |   {equation}");
+
+    public void GenerateRandomPuzzle()
+    {
+        exitPos = new Vector2Int(Random.Range(rows-3, rows+1), Random.Range(columns-3, columns+1));
+        List<Vector2Int> path = randomWalkBoard(exitPos);
+        Debug.Log("Path: " + string.Join(", ", path.Select(p => p.ToString())));
+
+        string[] newBoard = new string[rows];
+        string newRow = "";
+        for(int r = 0; r < rows; r++)
+        {  
+           for(int c = 0; c < columns; c++)
+            {
+                int empty = Random.Range(0, 100);
+                if(empty > 80)
+                {
+                    int symbol = Random.Range(0, 10);
+                    if(symbol > 5)
+                    {
+                        switch(symbol)
+                        {
+                            case 6:
+                                newRow+="+";
+                                break;
+                            case 7:
+                                newRow+="-";
+                                break;
+                            case 8:
+                                newRow+="*";
+                                break;
+                            case 9:
+                                newRow+="/";
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        int number = Random.Range(0, 9);
+                        newRow += number.ToString();
+                    }
+                    
+                }
+                else
+                {
+                    newRow += ".";
+                }
+                newRow += " ";
+            }
+            newRow.TrimEnd();
+            newBoard[r] = newRow;
+            newRow = "";
+        }
+        puzzle = newBoard;
+    }
+
+    public List<Vector2Int> randomWalkBoard(Vector2Int exitPos)
+    {
+        List<Vector2Int> exploredPositions = new List<Vector2Int>();
+        List<Vector2Int> Path = new List<Vector2Int>();
+        Vector2Int curPos = new Vector2Int(0, 0);
+        Vector2Int direction;
+        float episilon = 0.1f;
+        while(!curPos.Equals(exitPos))
+        {
+            exploredPositions.Add(curPos);
+            float[] dirWeights = calcStepsWeight(curPos, exitPos, episilon);
+            float dir = Random.value;
+            if(dir < dirWeights[0])
+            {
+                direction = Vector2Int.up;
+            }
+            else if(dir < dirWeights[1])
+            {
+                direction = Vector2Int.down;
+            }
+            else if(dir < dirWeights[2])
+            {
+                direction = Vector2Int.left;
+            }
+            else
+            {
+                direction = Vector2Int.right;
+            }
+            if(exploredPositions.Contains(curPos + direction))
+            {
+                continue;
+            }
+            curPos += direction;
+        }
+
+        return exploredPositions;
+    }
+
+    private float[] calcStepsWeight(Vector2Int curPos, Vector2Int exitPos, float bias)
+    {
+        float[] dirWeights = {0, 0, 0, 0};
+        float up;
+        float down;
+        float left;
+        float right;
+        Vector2 Direction = Vector2.Normalize(exitPos - curPos);
+        up = 1 + bias * Vector2.Dot(new Vector2(0, 1), Direction);
+        down = 1 + bias * Vector2.Dot(new Vector2(0, -1), Direction);
+        left = 1 + bias * Vector2.Dot(new Vector2(0, -1), Direction);
+        right = 1 + bias * Vector2.Dot(new Vector2(0, 1), Direction);
+        dirWeights[0] = up / (up + down + left + right);
+        dirWeights[1] = down / (up + down + left + right);
+        dirWeights[2] = left / (up + down + left + right);
+        dirWeights[3] = right / (up + down + left + right);
+        
+        return dirWeights;
+    }
+    // void findBoardAnswer()
+    // {
+    //     List<string> numbers = new List<string>();
+    //     List<string> symbols = new List<string>();
+    //     foreach(string rows in puzzle)
+    //     {
+    //         MatchCollection Nmatches = Regex.Matches(rows, @"\d+");
+    //         string[] Rownumbers = Nmatches.Select(m => m.Value).ToArray();
+    //         MatchCollection Smatches = Regex.Matches(rows, @"\s*[+\-*/%^]\s*");
+    //         string[] RowSymbols =  Smatches.Select(m => m.Value).ToArray();
+    //         foreach(string number in Rownumbers)
+    //         {
+    //             numbers.Add(number);
+    //         }
+    //         foreach(string symbol in RowSymbols)
+    //         {
+    //             symbols.Add(symbol);
+    //         }
+    //     }
+        
+    //     Debug.Log(string.Join(", ", numbers));
+    //     Debug.Log(string.Join(", ", symbols));
+    //     int minLength = Random.Range(2, numbers.Count+1);
+    //     if(minLength > symbols.Count+1)
+    //     {
+    //         minLength = symbols.Count+1;
+    //     }
+    //     string equation = "";
+    //     List<string> num = new List<string>();
+    //     List<string> sym = new List<string>();
+    //     num = numbers.OrderBy(n => Random.value).Take(minLength).ToList();
+    //     sym = symbols.OrderBy(n => Random.value).Take(minLength-1).ToList();
+    //     int nI = 0;
+    //     int sI = 0;
+    //     for(int i = 0; i < minLength*2-1; i++)
+    //     {
+    //         if(i % 2 == 0)
+    //         {
+    //             equation += num[nI];
+    //             nI++;
+    //         }
+    //         else
+    //         {
+    //             equation += sym[sI];
+    //             sI++;
+    //         }
+    //     }
+    //     Debug.Log(equation);
+    //     targetAnswer = Evaluate(equation);
+    // }
+
+
 }
