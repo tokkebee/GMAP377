@@ -46,7 +46,8 @@ public class InteractionPrepper : MonoBehaviour
                 {
                     case "Screen":
                         ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
-                        highlightedObject.SendMessage("Down",screen.mouseOver);
+                        highlightedObject.SendMessage("Down",screen.mouseOver, 
+                            SendMessageOptions.DontRequireReceiver);
                         break;
                     default:
                         Debug.Log($"Interacted With {highlightedObject}");

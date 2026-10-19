@@ -21,7 +21,7 @@ public class DemoScreen : MonoBehaviour
     {//Left Click Down
         if (over != null)
         {
-            over.transform.parent = _mouseFollow;
+            over.transform.SetParent(_mouseFollow,true);
         }
     }
 
@@ -29,7 +29,7 @@ public class DemoScreen : MonoBehaviour
     {
         if (over != null)
         {
-            over.transform.parent = _screen.screenCanvas.transform;
+            over.transform.SetParent(_screen.screenCanvas.transform,true);
             _mouseFollow.SetAsLastSibling(); 
         }
     }

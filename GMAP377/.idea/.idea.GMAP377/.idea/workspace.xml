@@ -12,9 +12,6 @@
   <component name="ChangeListManager">
     <list default="true" id="889a5a21-5fb8-4edc-b717-615b7a5680b2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GMAP377/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GMAP377/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Screens/Test2/RenderTextureSetup (CopyAndPaste)/RT_ScreenDisplay.renderTexture" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Screens/Test2/RenderTextureSetup (CopyAndPaste)/RT_ScreenDisplay.renderTexture" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Screens/TestScene/DemoScreen1/RT_ScreenDisplay.renderTexture" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Screens/TestScene/DemoScreen1/RT_ScreenDisplay.renderTexture" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/BasicMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/BasicMovement.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +103,7 @@
       <workItem from="1791244135065" duration="2299000" />
       <workItem from="1791661567764" duration="13677000" />
       <workItem from="1791766661877" duration="388000" />
-      <workItem from="1792180768498" duration="961000" />
+      <workItem from="1792180768498" duration="1553000" />
     </task>
     <servers />
   </component>
