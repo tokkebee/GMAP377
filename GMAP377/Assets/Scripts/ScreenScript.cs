@@ -50,6 +50,7 @@ public class ScreenScript : MonoBehaviour
                 screenObj.material = onMat;
                 foreach (Transform child in transform)
                     child.gameObject.SetActive(true);
+                screenObj.gameObject.SetActive(true);
             }
         }
         else
@@ -64,6 +65,7 @@ public class ScreenScript : MonoBehaviour
                         screenChild.gameObject.SetActive(false);
                     }
                 }
+                screenObj.gameObject.SetActive(false);
                    
             }
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -35,11 +36,14 @@ public class PuzzleEngine : MonoBehaviour
     private readonly List<Vector2Int> path = new List<Vector2Int>();
     private LineRenderer line;
     private string equation = "";
-    private bool isDragging, gameWon;
+    private bool isDragging;
+    public bool gameWon {get; private set;}
     
     [SerializeField] private ScreenScript screen;
     [SerializeField] private Canvas screenCanvas;
     private List<GameObject> tiles = new List<GameObject>();
+
+    public static Action puzzleCompleted;
  
 
     void Awake()
@@ -154,17 +158,8 @@ public class PuzzleEngine : MonoBehaviour
     }
 
     
-    //private Camera ViewCamera => Camera.main != null ? Camera.main : puzzleCamera;
     private Camera ViewCamera => puzzleCamera != null ? puzzleCamera : Camera.main;
     
-    
-    // public void HandleInput(InputAction.CallbackContext context)
-    // {
-    //     if (gameWon) return;
-    //
-    //     if (context.performed) BeginPath();
-    //     else if (context.canceled) EndPath();
-    // }
 
     public void Down()
     {
@@ -177,8 +172,13 @@ public class PuzzleEngine : MonoBehaviour
 
     void Update()
     {
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            restart();
+        }
         if (!isDragging) return;
         if (PointerCell(out Vector2Int cell)) ExtendPath(cell);
+        
     }
 
     private void BeginPath()
@@ -247,6 +247,7 @@ public class PuzzleEngine : MonoBehaviour
             gameWon = true;
             Debug.Log($"PUZZLE SOLVED! {expression} = {value}");
             SetHud($"{expression} = {value}   SOLVED!");
+            puzzleCompleted?.Invoke();
             return;
         }
 
