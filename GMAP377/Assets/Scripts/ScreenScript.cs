@@ -18,7 +18,7 @@ public class ScreenScript : MonoBehaviour
     [SerializeField] private Material onMat;
     [SerializeField] private Material offMat;
     [SerializeField] private float onDistance;
-
+    //TEST TEST TEST
     private void Start()
     {
         RectTransform screenRect = screenCanvas.gameObject.GetComponent<RectTransform>();

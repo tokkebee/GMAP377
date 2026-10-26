@@ -18,7 +18,7 @@ public class InteractionPrepper : MonoBehaviour
     [SerializeField] private Vector3 lookDir;
     [SerializeField] private List<string> selectableTags;
     private Material nativeMat;
-    
+    //TEST TEST TEST
     void Start()
     {
         movement = GetComponent<BasicMovement>();
