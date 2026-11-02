@@ -40,7 +40,7 @@ public class InteractionPrepper : MonoBehaviour
             if (highlightedObject.CompareTag("Screen"))
                 highlightedObject.transform.parent.GetComponent<ScreenScript>().ScreenMouseOver(hit.textureCoord);
 
-            if (Input.GetMouseButtonDown(0)) //Left click down
+            if (Mouse.current.leftButton.wasPressedThisFrame) //Left click down
             {
                 switch (highlightedObject.tag)
                 {
@@ -54,7 +54,7 @@ public class InteractionPrepper : MonoBehaviour
                         break;
                 }
             }
-            else if (Input.GetMouseButtonUp(0)) //Left Click Up
+            else if (Mouse.current.leftButton.wasReleasedThisFrame) //Left Click Up
             {
                 switch (highlightedObject.tag)
                 {
