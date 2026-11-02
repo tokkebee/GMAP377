@@ -44,14 +44,13 @@ public class InteractionPrepper : MonoBehaviour
 
             if (Mouse.current.leftButton.wasPressedThisFrame) //Left click down
             {
-                Debug.Log("MouseDown");
                 switch (highlightedObject.tag)
                 {
                     case "Screen":
                         ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
-                        Debug.Log(screen.mouseOver.name);
-                        highlightedObject.SendMessage("Down",screen.mouseOver, 
-                            SendMessageOptions.DontRequireReceiver);
+                        if (screen.mouseOver!=null)
+                            highlightedObject.SendMessage("Down",screen.mouseOver, 
+                                SendMessageOptions.DontRequireReceiver);
                         break;
                     default:
                         Debug.Log($"Interacted With {highlightedObject}");
@@ -64,8 +63,9 @@ public class InteractionPrepper : MonoBehaviour
                 {
                     case "Screen":
                         ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
-                        highlightedObject.SendMessage("Up",screen.mouseOver,
-                            SendMessageOptions.DontRequireReceiver);
+                        if (screen.mouseOver!=null)
+                            highlightedObject.SendMessage("Up",screen.mouseOver,
+                                SendMessageOptions.DontRequireReceiver);
                         break;
                 }
             }
