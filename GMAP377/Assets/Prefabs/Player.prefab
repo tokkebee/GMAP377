@@ -28,11 +28,11 @@ Transform:
   m_GameObject: {fileID: 1684091289341274029}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.781, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5436090071064215598}
+  m_Father: {fileID: 8544729385381328750}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &7801202687797992425
 Camera:
@@ -172,7 +172,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6369021997022914359}
+  - {fileID: 8544729385381328750}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3643013314897239641
@@ -293,13 +293,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicMovement
   playerCam: {fileID: 7801202687797992425}
+  camHolder: {fileID: 6407057934307781942}
   menuInteracting: 0
   charCon: {fileID: 0}
   walkSpeed: 5
   runSpeed: 10
+  crouchSpeed: 0
+  crouchTime: 0
   lookSpeed: 10
   gravity: 1.2
   jumpForce: 0.3
+  bobEnabled: 1
+  frequency: 10
+  amplitude: 0.015
 --- !u!114 &538943397703365213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -320,3 +326,35 @@ MonoBehaviour:
   selectableTags:
   - Screen
   - Pickup
+--- !u!1 &6407057934307781942
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8544729385381328750}
+  m_Layer: 0
+  m_Name: Camera Holder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8544729385381328750
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6407057934307781942}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.395, z: 0.22}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6369021997022914359}
+  m_Father: {fileID: 5436090071064215598}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

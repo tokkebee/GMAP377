@@ -830,6 +830,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
+      propertyPath: amplitude
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
+      propertyPath: frequency
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
+      propertyPath: crouchTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
+      propertyPath: crouchSpeed
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
+      propertyPath: crouchMultiplier
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3685840249312572578, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
       propertyPath: m_Name
       value: Player

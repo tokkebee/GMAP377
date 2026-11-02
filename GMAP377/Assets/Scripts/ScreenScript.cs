@@ -64,9 +64,7 @@ public class ScreenScript : MonoBehaviour
                     {
                         screenChild.gameObject.SetActive(false);
                     }
-                }
-                screenObj.gameObject.SetActive(false);
-                   
+                }                   
             }
         }
     }
