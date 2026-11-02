@@ -21,6 +21,7 @@ public class InteractionPrepper : MonoBehaviour
     //TEST TEST TEST
     void Start()
     {
+        Application.targetFrameRate = 60;
         movement = GetComponent<BasicMovement>();
         cam = movement.playerCam;
         Cursor.lockState = CursorLockMode.Locked;
@@ -31,6 +32,7 @@ public class InteractionPrepper : MonoBehaviour
         RaycastHit hit;
         lookDir = cam.gameObject.transform.forward;
         Debug.DrawRay(cam.transform.position, lookDir*selectDist);
+        
         if (Physics.Raycast(cam.transform.position, lookDir, out hit, selectDist) && 
             selectableTags.Contains(hit.collider.tag))
         {
@@ -40,12 +42,14 @@ public class InteractionPrepper : MonoBehaviour
             if (highlightedObject.CompareTag("Screen"))
                 highlightedObject.transform.parent.GetComponent<ScreenScript>().ScreenMouseOver(hit.textureCoord);
 
-            if (Input.GetMouseButtonDown(0)) //Left click down
+            if (Mouse.current.leftButton.wasPressedThisFrame) //Left click down
             {
+                Debug.Log("MouseDown");
                 switch (highlightedObject.tag)
                 {
                     case "Screen":
                         ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
+                        Debug.Log(screen.mouseOver.name);
                         highlightedObject.SendMessage("Down",screen.mouseOver, 
                             SendMessageOptions.DontRequireReceiver);
                         break;
@@ -54,7 +58,7 @@ public class InteractionPrepper : MonoBehaviour
                         break;
                 }
             }
-            else if (Input.GetMouseButtonUp(0)) //Left Click Up
+            else if (Mouse.current.leftButton.wasReleasedThisFrame) //Left Click Up
             {
                 switch (highlightedObject.tag)
                 {
@@ -65,25 +69,16 @@ public class InteractionPrepper : MonoBehaviour
                 }
             }
         }
-        else
-        {
-            DeselectObject();
-        }
+        else DeselectObject();
     }
 
     void SelectObject(GameObject newHighlight)
     {
-        if (highlightedObject != null)
-        {
-            DeselectObject();
-        }
-
+        if (highlightedObject != null) DeselectObject();
         highlightedObject = newHighlight;
         nativeMat = highlightedObject.GetComponent<MeshRenderer>().material;
         if (selectMat != null && !highlightedObject.CompareTag("Screen"))
-        {
             highlightedObject.GetComponent<MeshRenderer>().material = selectMat;
-        }
     }
 
     void DeselectObject()

@@ -19,10 +19,7 @@ public class DemoScreen : MonoBehaviour
 
     public void Down(GameObject over = null)
     {//Left Click Down
-        if (over != null)
-        {
-            over.transform.SetParent(_mouseFollow,true);
-        }
+        if (over != null) over.transform.SetParent(_mouseFollow,true);
     }
 
     public void Up(GameObject over = null)
