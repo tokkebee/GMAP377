@@ -32,6 +32,11 @@ public class BasicMovement : MonoBehaviour
     private float standingHeight;
     private Coroutine crouchRoutine;
     private bool transitioning = false;
+    //I'm a little iffy on the action stuff but, here's theoretically how it should work.
+    //This creates the actions onPlayerCrouch and onPlayer Stand
+    public static event Action onPlayerCrouch;
+    public static event Action onPlayerStand;
+
 
     private void Start()//Snag CharacterController component on object
     {
@@ -43,11 +48,18 @@ public class BasicMovement : MonoBehaviour
     private void FixedUpdate()//Calls movement methods on fixed update
     {
         VertForceCalc();
-        Crouching();
         Movement();
     }
 
-    private void Update() => CameraManagement(); //Manages camera on update
+    private void Update()
+    {
+        CameraManagement(); //Manages camera on update
+        if (InputSystem.actions["Crouch"].WasPressedThisFrame() && !transitioning)
+        {
+            Debug.Log(charCon.isGrounded);
+            Crouching();
+        }
+    }
     
     private void Movement()//Input handling and basic movement calculations
     {
@@ -85,17 +97,22 @@ public class BasicMovement : MonoBehaviour
     private void Crouching()
     {
         //Checks if the player is grounded, not alreadying trying to crouch, and crouch is pressed
-        if (InputSystem.actions["Crouch"].WasPressedThisFrame() && !transitioning && charCon.isGrounded)
+        //stops incomplete coroutine (might be redundant)
+        if(crouchRoutine != null)
         {
-            //stops incomplete coroutine (might be redundant)
-            if(crouchRoutine != null)
-            {
-                StopCoroutine(crouchRoutine);
-            }
-            //Decides wheter to crouch or stand
-            float targetHeight = isCrouching ? standingHeight : standingHeight/2;
-            crouchRoutine = StartCoroutine(AdjustHeight(targetHeight));
+            StopCoroutine(crouchRoutine);
         }
+        //Decides wheter to crouch or stand
+        float targetHeight = isCrouching ? standingHeight : standingHeight/2;
+        if (isCrouching)
+        {
+            onPlayerStand?.Invoke(); //Invokes standing if the player is already crouching
+        }
+        else
+        {
+            onPlayerCrouch?.Invoke(); //Invokes crouching if the player isn't crouching yet
+        }
+        crouchRoutine = StartCoroutine(AdjustHeight(targetHeight));
     }
 
     private IEnumerator AdjustHeight(float targetHeight) //Lerps between the current height and the final height
@@ -103,6 +120,7 @@ public class BasicMovement : MonoBehaviour
         float currentHeight = charCon.height;
         float elapsedTime = 0.0f; //time passed each frame
         transitioning = true;
+        Debug.Log("Start Transitioning");
         while (elapsedTime < crouchTime)
         {
             elapsedTime += Time.deltaTime;
@@ -113,6 +131,7 @@ public class BasicMovement : MonoBehaviour
         charCon.height = targetHeight;
         isCrouching = isCrouching ? false : true;
         transitioning = false;
+        Debug.Log("Done Transitioning");
     }
     
     void CameraManagement()
