@@ -10,7 +10,7 @@ public class DemoScreen : MonoBehaviour
 
     private ScreenScript _screen; //Main Screen Script
     private RectTransform _mouseFollow; //Where the mouse is in canvas space
-
+    //TEST TEST TEST
     private void Start()
     {
         _screen = transform.parent.GetComponent<ScreenScript>();
@@ -19,17 +19,14 @@ public class DemoScreen : MonoBehaviour
 
     public void Down(GameObject over = null)
     {//Left Click Down
-        if (over != null)
-        {
-            over.transform.parent = _mouseFollow;
-        }
+        if (over != null) over.transform.SetParent(_mouseFollow,true);
     }
 
     public void Up(GameObject over = null)
     {
         if (over != null)
         {
-            over.transform.parent = _screen.screenCanvas.transform;
+            over.transform.SetParent(_screen.screenCanvas.transform,true);
             _mouseFollow.SetAsLastSibling(); 
         }
     }

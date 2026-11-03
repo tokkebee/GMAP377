@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 
 [RequireComponent(typeof(LineRenderer))]
@@ -29,29 +32,52 @@ public class PuzzleEngine : MonoBehaviour
     [SerializeField] private TMP_Text hudText;
 
     private static readonly string[] Operations = { "+", "-", "*", "/" };
-
     private string[,] board;
     private readonly List<Vector2Int> path = new List<Vector2Int>();
     private LineRenderer line;
     private string equation = "";
-    private bool isDragging, gameWon;
+    private bool isDragging;
+    public bool gameWon {get; private set;}
+    
+    [SerializeField] private ScreenScript screen;
+    [SerializeField] private Canvas screenCanvas;
+    private List<GameObject> tiles = new List<GameObject>();
+
+    public static Action puzzleCompleted;
+ 
 
     void Awake()
     {
-        line = GetComponent<LineRenderer>();
-        line.useWorldSpace = true;                                  // cell positions are world space
-        line.startWidth = line.endWidth = cellSize * 0.5f;         // scene value (1) is far wider than a cell
+        line = screenCanvas != null ? screenCanvas.GetComponent<LineRenderer>() : GetComponent<LineRenderer>();
+        if (line == null) line = gameObject.AddComponent<LineRenderer>();
+        line.useWorldSpace = false;
+        line.startWidth = line.endWidth = cellSize * 0.005f;
         if (line.sharedMaterial == null)
         {
             var shader = Shader.Find("Sprites/Default") ?? Shader.Find("Universal Render Pipeline/Unlit");
             if (shader != null) line.material = new Material(shader);
         }
-
+        puzzle = new string[rows];
+    
+        GenerateRandomPuzzle();
+        
         BuildBoard();
         BuildTiles();
         UpdateHud();
     }
 
+    public void restart()
+    {
+        puzzle = new string[rows];
+        UpdateHud();
+        ResetPath(); 
+        gameWon = false;
+        GenerateRandomPuzzle();
+        
+        BuildBoard();
+        BuildTiles();
+        UpdateHud();
+    }
     
     private void BuildBoard()
     {
@@ -70,20 +96,28 @@ public class PuzzleEngine : MonoBehaviour
 
     private void BuildTiles()
     {
+        foreach(GameObject tile in tiles)
+        {
+            Destroy(tile);
+        }
+        Vector2 centerOffSet = new Vector2();
+        centerOffSet.x = 500 - cellSize * columns;
+        centerOffSet.y = 500 - cellSize * rows;
         for (int c = 0; c < columns; c++)
             for (int r = 0; r < rows; r++)
             {
                 var tile = new GameObject($"Tile {c},{r}", typeof(RectTransform));
+                tiles.Add(tile);
                 tile.layer = gameObject.layer;
-                tile.transform.SetParent(transform, false);
-                tile.transform.localPosition = new Vector3(c * cellSize, 0f, (rows - 1 - r) * cellSize);
+                tile.transform.SetParent(screenCanvas.transform, false);
+                tile.transform.localPosition = new Vector3(c * cellSize + centerOffSet.x, (rows - 1 - r) * cellSize + centerOffSet.y, 0f);
  
                 tile.transform.rotation = puzzleCamera != null ? puzzleCamera.transform.rotation : Quaternion.Euler(90f, 0f, 0f);
 
-                var text = tile.AddComponent<TextMeshPro>();
+                var text = tile.AddComponent<TextMeshProUGUI>();
                 text.rectTransform.sizeDelta = new Vector2(cellSize, cellSize);
                 text.alignment = TextAlignmentOptions.Center;
-                text.fontSize = cellSize * 8f;
+                text.fontSize = cellSize;
 
                 tile.AddComponent<GridTileVisual>().SetupTile(board[c, r], new Vector2Int(c, r) == exitPos);
             }
@@ -92,7 +126,9 @@ public class PuzzleEngine : MonoBehaviour
 
 
     private Vector3 CellToWorld(Vector2Int cell) =>
-        transform.position + new Vector3(cell.x * cellSize, 0f, (rows - 1 - cell.y) * cellSize);
+        GameObject.Find($"Tile {cell.x},{cell.y}").GetComponent<RectTransform>().anchoredPosition;
+        
+        
 
     private Vector2Int WorldToCell(Vector3 world) =>
         new Vector2Int(Mathf.RoundToInt((world.x - transform.position.x) / cellSize),
@@ -105,36 +141,50 @@ public class PuzzleEngine : MonoBehaviour
         cell = default;
         Camera view = ViewCamera;
         if (view == null || Pointer.current == null) return false;
+        // Ray ray = view.ScreenPointToRay(screen.mouseFollow.position);
+        // if (!new Plane(Vector3.up, transform.position).Raycast(ray, out float distance)) return false;
+        // cell = WorldToCell(ray.GetPoint(distance));
+        // return true;
 
-        Ray ray = view.ScreenPointToRay(Pointer.current.position.ReadValue());
-        if (!new Plane(Vector3.up, transform.position).Raycast(ray, out float distance)) return false;
-
-        cell = WorldToCell(ray.GetPoint(distance));
+        if (!screen.mouseOver) return false;
+        string name = screen.mouseOver.name;
+        if (!name.Contains(',')) return false;
+        int vecIndex = name.IndexOf(',');
+        int x = name[vecIndex - 1];
+        int y = name[vecIndex + 1];
+        cell = new Vector2Int(x-48, y-48);
+        Debug.Log(cell);
         return true;
     }
 
     
-    private Camera ViewCamera => Camera.main != null ? Camera.main : puzzleCamera;
-
+    private Camera ViewCamera => puzzleCamera != null ? puzzleCamera : Camera.main;
     
-    public void HandleInput(InputAction.CallbackContext context)
-    {
-        if (gameWon) return;
 
-        if (context.performed) BeginPath();
-        else if (context.canceled) EndPath();
+    public void Down()
+    {
+        if (!gameWon) BeginPath();
+    }
+    public void Up()
+    {
+        if (!gameWon) EndPath();
     }
 
     void Update()
     {
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            restart();
+        }
         if (!isDragging) return;
         if (PointerCell(out Vector2Int cell)) ExtendPath(cell);
+        
     }
 
     private void BeginPath()
     {
         if (!PointerCell(out Vector2Int cell)) return;
-        if (cell != Vector2Int.zero) return; 
+        //if (cell != Vector2Int.zero) return; 
 
         path.Clear();
         path.Add(cell);
@@ -152,7 +202,7 @@ public class PuzzleEngine : MonoBehaviour
         if (cell == last) return;
 
         int seen = path.IndexOf(cell);
-        if (seen >= 0) // dragged back over the line: undo to that cell
+        if (seen >= 0)
         {
             path.RemoveRange(seen + 1, path.Count - seen - 1);
             RebuildEquation();
@@ -161,10 +211,10 @@ public class PuzzleEngine : MonoBehaviour
             return;
         }
 
-        if (Mathf.Abs(cell.x - last.x) + Mathf.Abs(cell.y - last.y) != 1) return; // orthogonal steps only
+        if (Mathf.Abs(cell.x - last.x) + Mathf.Abs(cell.y - last.y) != 1) return;
 
         string value = board[cell.x, cell.y];
-        if (value != " " && IsOperator(value) && EndsWithOperator()) return; // no two operators in a row
+        if (value != " " && IsOperator(value) && EndsWithOperator()) return;
 
         path.Add(cell);
         RebuildEquation();
@@ -197,6 +247,7 @@ public class PuzzleEngine : MonoBehaviour
             gameWon = true;
             Debug.Log($"PUZZLE SOLVED! {expression} = {value}");
             SetHud($"{expression} = {value}   SOLVED!");
+            puzzleCompleted?.Invoke();
             return;
         }
 
@@ -214,12 +265,19 @@ public class PuzzleEngine : MonoBehaviour
 
     private void RebuildEquation()
     {
-        var values = new List<string>();
+        equation = "";
         foreach (Vector2Int cell in path)
-            if (board[cell.x, cell.y] != " ")
-                values.Add(board[cell.x, cell.y]);
+        {
+            string value = board[cell.x, cell.y];
+            if (value == " ") continue;
 
-        equation = string.Join(" ", values);
+            bool digitsTouch = equation.Length > 0
+                && char.IsDigit(equation[equation.Length - 1])
+                && value.Length == 1 && char.IsDigit(value[0]);
+
+            if (equation.Length > 0 && !digitsTouch) equation += " ";
+            equation += value;
+        }
     }
 
     private static bool IsOperator(string value) => System.Array.IndexOf(Operations, value) >= 0;
@@ -236,20 +294,38 @@ public class PuzzleEngine : MonoBehaviour
     {
         if (string.IsNullOrEmpty(expression)) return 0f;
 
-        string[] parts = expression.Split(' ');
-        float value = float.Parse(parts[0]);
+        float value = 0f;
+        bool haveValue = false;
+        string pendingOp = "";
+        string number = "";
 
-        for (int i = 1; i + 1 < parts.Length; i += 2)
+        void Apply()
         {
-            float operand = float.Parse(parts[i + 1]);
-            switch (parts[i])
+            if (number == "") return;
+
+            float operand = float.Parse(number);
+            number = "";
+
+            if (!haveValue) { value = operand; haveValue = true; pendingOp = ""; return; }
+
+            switch (pendingOp)
             {
                 case "+": value += operand; break;
                 case "-": value -= operand; break;
                 case "*": value *= operand; break;
                 case "/": value /= operand; break;
             }
+            pendingOp = "";
         }
+
+        foreach (string part in expression.Split(' '))
+        {
+            if (IsOperator(part)) { Apply(); pendingOp = part; continue; }
+            if (!float.TryParse(part, out _)) continue;
+            number += part;
+        }
+        Apply();
+
         return value;
     }
 
@@ -270,4 +346,170 @@ public class PuzzleEngine : MonoBehaviour
     private void UpdateHud() => SetHud(equation == ""
         ? $"Target {targetAnswer}   |   drag from the top-left cell"
         : $"Target {targetAnswer}   |   {equation}");
+
+    public void GenerateRandomPuzzle()
+    {
+        int minX = Mathf.Min(columns - 1, Mathf.Max(1, columns - 3));
+        int minY = Mathf.Min(rows - 1, Mathf.Max(1, rows - 3));
+        exitPos = new Vector2Int(Random.Range(minX, columns), Random.Range(minY, rows));
+        List<Vector2Int> path = DFSWalkBoard(exitPos);
+        Debug.Log("Path: " + string.Join(", ", path.Select(p => p.ToString())));
+        int i = 0;
+        char[,] newBoard = new char[columns, rows];
+        foreach(Vector2Int cell in path)
+        {
+            int empty = Random.Range(60, 100);
+            if(empty >= 80)
+            {
+                if(i % 2 == 0)
+                {
+                    int number = Random.Range(1, 9);
+                    newBoard[cell.x, cell.y] = (char) (number + '0');
+                }
+                else
+                {
+                    int symbol = Random.Range(6, 10);
+                    if(symbol > 5)
+                    {
+                        switch(symbol)
+                        {
+                            case 6:
+                                newBoard[cell.x, cell.y] = '+';
+                                break;
+                            case 7:
+                                newBoard[cell.x, cell.y] = '-';
+                                break;
+                            case 8:
+                                newBoard[cell.x, cell.y] = '*';
+                                break;
+                            case 9:
+                                newBoard[cell.x, cell.y] = '/';
+                                break;
+                        }
+                    }
+                }
+                i++;
+            }
+            else newBoard[cell.x, cell.y] = '.';
+        }
+        string EquationOf() => string.Join(" ", path
+            .Select(c => newBoard[c.x, c.y])
+            .Where(ch => ch != '.' && ch != '\0'));
+
+        newBoard[path[path.Count-1].x, path[path.Count-1].y] = '.';
+        path.RemoveAt(path.Count - 1);
+
+        string puzzleEquation = EquationOf();
+        while (puzzleEquation.Length > 0 && !char.IsDigit(puzzleEquation[puzzleEquation.Length - 1]))
+        {
+            newBoard[path[path.Count-1].x, path[path.Count-1].y] = '.';
+            path.RemoveAt(path.Count - 1);
+            puzzleEquation = EquationOf();
+        }
+        if (puzzleEquation.Length == 0 && path.Count > 0)
+        {
+            newBoard[path[0].x, path[0].y] = (char)('1' + Random.Range(0, 9));
+            puzzleEquation = EquationOf();
+        }
+        targetAnswer = Evaluate(puzzleEquation);
+        for(int r = 0; r < rows; r++)
+        {  
+            for(int c = 0; c < columns; c++)
+            {
+                int empty;
+                
+                if(newBoard[c, r] == '\0')
+                {
+                    empty = Random.Range(0, 100);
+                    if(empty > 80)
+                    {
+                        int symbol = Random.Range(0, 10);
+                        if(symbol > 5)
+                        {
+                            switch(symbol)
+                            {
+                                case 6:
+                                    newBoard[c, r] = '+';
+                                    break;
+                                case 7:
+                                    newBoard[c, r] = '-';
+                                    break;
+                                case 8:
+                                    newBoard[c, r] = '*';
+                                    break;
+                                case 9:
+                                    newBoard[c, r] = '/';
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            int number = Random.Range(1, 9);
+                            newBoard[c, r] = (char) (number + '0');
+                        }
+                    }
+                    else
+                        newBoard[c, r] = '.';
+                }
+                
+            }
+        }
+        
+        puzzle = new string[rows];
+        for(int r = 0; r < rows; r++)
+            puzzle[r] = string.Join(" ", Enumerable.Range(0, columns)
+                       .Select(colIndex => newBoard[colIndex, r])
+                       .ToArray());
+        
+    }
+
+    public List<Vector2Int> DFSWalkBoard(Vector2Int exitPos)
+    {
+        HashSet<Vector2Int> exploredPositions = new HashSet<Vector2Int>();
+        Stack<Vector2Int> Path = new Stack<Vector2Int>();
+        Vector2Int curPos = new Vector2Int(0, 0);
+        Path.Push(curPos);
+        exploredPositions.Add(curPos);
+
+        int guard = 4 * rows * columns + 16;
+        while(Path.Count > 0 && guard-- > 0)
+        {
+            List<Vector2Int> possibleMoves = new List<Vector2Int>();
+            if((curPos + Vector2Int.up).y < rows && !exploredPositions.Contains(curPos + Vector2Int.up))
+            {
+                possibleMoves.Add(curPos + Vector2Int.up);
+            }
+            if((curPos + Vector2Int.down).y >= 0 && !exploredPositions.Contains(curPos + Vector2Int.down))
+            {
+                possibleMoves.Add(curPos + Vector2Int.down);
+            }
+            if((curPos + Vector2Int.left).x >= 0 && !exploredPositions.Contains(curPos + Vector2Int.left))
+            {
+                possibleMoves.Add(curPos + Vector2Int.left);
+            }
+            if((curPos + Vector2Int.right).x < columns && !exploredPositions.Contains(curPos + Vector2Int.right))
+            {
+                possibleMoves.Add(curPos + Vector2Int.right);
+            }
+            if(possibleMoves.Count == 0)
+            {
+                Path.Pop();
+                if (Path.Count == 0) break;
+                curPos = Path.Peek();
+                continue;
+            }
+            curPos = possibleMoves[Random.Range(0, possibleMoves.Count)];
+            exploredPositions.Add(curPos);
+            Path.Push(curPos);
+            if (curPos == exitPos) break;
+
+            
+        }
+        List<Vector2Int> p = Path.ToList();
+        p.Reverse();
+        return p;
+    }
+
+    
+
 }

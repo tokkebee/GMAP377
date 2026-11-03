@@ -18,7 +18,7 @@ public class ScreenScript : MonoBehaviour
     [SerializeField] private Material onMat;
     [SerializeField] private Material offMat;
     [SerializeField] private float onDistance;
-
+    //TEST TEST TEST
     private void Start()
     {
         RectTransform screenRect = screenCanvas.gameObject.GetComponent<RectTransform>();
@@ -58,13 +58,8 @@ public class ScreenScript : MonoBehaviour
             {
                 screenObj.material = offMat;
                 foreach (Transform screenChild in transform)
-                {
                     if (screenChild!=screenObj.transform)
-                    {
                         screenChild.gameObject.SetActive(false);
-                    }
-                }
-                   
             }
         }
     }
@@ -81,13 +76,6 @@ public class ScreenScript : MonoBehaviour
         PointerEventData pointerData = new PointerEventData(_eventSystem){position = mouseFollowPosition};
         List<RaycastResult> coveredUI = new List<RaycastResult>();
         _screenRay.Raycast(pointerData, coveredUI);
-        if (coveredUI.Count > 0)
-        {
-            mouseOver = coveredUI[0].gameObject;
-        }
-        else
-        {
-            mouseOver = null;
-        }
+        mouseOver = (coveredUI.Count > 0) ? coveredUI[0].gameObject : null;
     }
 }
