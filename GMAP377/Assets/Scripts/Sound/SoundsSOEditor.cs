@@ -5,12 +5,14 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 
+//This script handles updating the names and values of the SoundsSO scriptable object
+
+//full credit to Small Hedge Games: 
+//github repo: https://github.com/SmallHedge/SoundManager
+
 [CustomEditor(typeof(SoundsSO))]
 public class SoundsSOEditor : Editor {
     private void OnEnable() {
-        Debug.Log($"Target: {target}");
-        Debug.Log($"Target type: {target.GetType().AssemblyQualifiedName}");
-        Debug.Log($"Expected type: {typeof(SoundsSO).AssemblyQualifiedName}");
         ref SoundList[] soundList = ref ((SoundsSO)target).sounds;
 
         if (soundList == null)

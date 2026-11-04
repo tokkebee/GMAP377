@@ -2,6 +2,11 @@ using System;
 using UnityEngine;
 using UnityEngine.Audio;
 
+//This script handles playing sound
+
+//full credit to Small Hedge Games: 
+//github repo: https://github.com/SmallHedge/SoundManager
+
 [Serializable]
 public struct SoundList {
     [HideInInspector] public string name;
@@ -15,16 +20,6 @@ public class SoundManager : MonoBehaviour {
     private static SoundManager instance = null;
     private AudioSource audioSource;
     [SerializeField] private SoundsSO SO;
-
-// #if UNITY_EDITOR
-//     private void OnEnable() {
-//         string[] names = Enum.GetNames(typeof(SoundType));
-//         Array.Resize(ref soundList, names.Length);
-//         for (int i = 0; i < soundList.Length; i++) {
-//             soundList[i].name = names[i];
-//         }
-//     }
-// #endif
 
     private void Awake() {
         if (!instance) {
