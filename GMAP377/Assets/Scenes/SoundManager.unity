@@ -2289,7 +2289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4d29d7d6378e4e4695dd0a689bd327e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
-  SO: {fileID: 0}
+  SO: {fileID: 11400000, guid: 82a363fbbabd57e48b0943712e8e1713, type: 2}
 --- !u!4 &2144517016
 Transform:
   m_ObjectHideFlags: 0
