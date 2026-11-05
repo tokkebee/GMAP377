@@ -65,10 +65,7 @@ public class InteractionPrepper : MonoBehaviour
                 }
             }
         }
-        else
-        {
-            DeselectObject();
-        }
+        else DeselectObject();
     }
 
     void SelectObject(GameObject newHighlight)
