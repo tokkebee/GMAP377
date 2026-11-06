@@ -320,3 +320,4 @@ MonoBehaviour:
   selectableTags:
   - Screen
   - Pickup
+  - ElectricalLever

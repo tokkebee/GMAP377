@@ -6,9 +6,6 @@ public class ElectricalLever : InteractBase
     public bool enabled;
     private ElectricityManager _manager;
 
-    //ALPHA TEST WORK -- REMOVE ONCE LEVERS HAVE ANIMATIONS
-    [SerializeField] private bool alphaTest;
-
     private void Awake()
     {
         enabled = false;
@@ -21,7 +18,7 @@ public class ElectricalLever : InteractBase
         else _manager.enabledLevers.Remove(this);
         _manager.Evaluate();
         
-        //REMOVE WHEN ANIMS
+        //ALPHA TEST WORK -- REMOVE ONCE LEVERS HAVE ANIMATIONS
         transform.localScale = enabled ? new Vector3(1,3,1) : new Vector3(1,2,1);
         Debug.Log(enabled?"Enabled":"Disabled");
     }
