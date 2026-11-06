@@ -5,7 +5,7 @@ using UnityEngine;
 //New scripts can be created using this template by right-clicking in project,
 //and click on Create/GMAP377/New UI Script.
 
-public class DemoScreen : MonoBehaviour
+public class DemoScreen : InteractBase
 {//Add this script to the screen game object that is being targeted in physics raycasting
 
     private ScreenScript _screen; //Main Screen Script
@@ -17,13 +17,15 @@ public class DemoScreen : MonoBehaviour
         _mouseFollow = _screen.mouseFollow;
     }
 
-    public void Down(GameObject over = null)
-    {//Left Click Down
+    public override void Click()
+    {
+        GameObject over = _screen.mouseOver;
         if (over != null) over.transform.SetParent(_mouseFollow,true);
     }
 
-    public void Up(GameObject over = null)
+    public override void Release()
     {
+        GameObject over = _screen.mouseOver;
         if (over != null)
         {
             over.transform.SetParent(_screen.screenCanvas.transform,true);

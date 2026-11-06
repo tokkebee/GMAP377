@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 
 [RequireComponent(typeof(LineRenderer))]
-public class PuzzleEngine : MonoBehaviour
+public class PuzzleEngine : InteractBase //Will switch to inherit from InteractionConnector soon
 {
     [Header("Grid")]
     [SerializeField] private int columns = 5;
@@ -159,13 +159,13 @@ public class PuzzleEngine : MonoBehaviour
 
     
     private Camera ViewCamera => puzzleCamera != null ? puzzleCamera : Camera.main;
-    
 
-    public void Down()
+
+    public override void Click()
     {
         if (!gameWon) BeginPath();
     }
-    public void Up()
+    public override void Release()
     {
         if (!gameWon) EndPath();
     }

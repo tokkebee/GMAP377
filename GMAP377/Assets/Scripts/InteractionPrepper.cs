@@ -18,7 +18,6 @@ public class InteractionPrepper : MonoBehaviour
     [SerializeField] private Vector3 lookDir;
     [SerializeField] private List<string> selectableTags;
     private Material nativeMat;
-    //TEST TEST TEST
     void Start()
     {
         Application.targetFrameRate = 60;
@@ -44,30 +43,14 @@ public class InteractionPrepper : MonoBehaviour
 
             if (Mouse.current.leftButton.wasPressedThisFrame) //Left click down
             {
-                switch (highlightedObject.tag)
-                {
-                    case "Screen":
-                        ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
-                        if (screen.mouseOver!=null)
-                            highlightedObject.SendMessage("Down",screen.mouseOver, 
-                                SendMessageOptions.DontRequireReceiver);
-                        break;
-                    default:
-                        Debug.Log($"Interacted With {highlightedObject}");
-                        break;
-                }
+                if (highlightedObject.TryGetComponent(out InteractBase interact))
+                    interact.Click();
+                Debug.Log($"Interacted With {highlightedObject}");
             }
             else if (Mouse.current.leftButton.wasReleasedThisFrame) //Left Click Up
             {
-                switch (highlightedObject.tag)
-                {
-                    case "Screen":
-                        ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
-                        if (screen.mouseOver!=null)
-                            highlightedObject.SendMessage("Up",screen.mouseOver,
-                                SendMessageOptions.DontRequireReceiver);
-                        break;
-                }
+                if (highlightedObject.TryGetComponent(out InteractBase interact))
+                    interact.Release();
             }
         }
         else DeselectObject();

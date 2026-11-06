@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Screen
   - Pickup
+  - ElectricalLever
   layers:
   - Default
   - TransparentFX
