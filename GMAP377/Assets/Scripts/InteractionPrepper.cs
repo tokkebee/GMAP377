@@ -18,74 +18,68 @@ public class InteractionPrepper : MonoBehaviour
     [SerializeField] private Vector3 lookDir;
     [SerializeField] private List<string> selectableTags;
     private Material nativeMat;
-    
+    //TEST TEST TEST
     void Start()
     {
+        Application.targetFrameRate = 60;
         movement = GetComponent<BasicMovement>();
         cam = movement.playerCam;
         Cursor.lockState = CursorLockMode.Locked;
     }
+    
     void Update()
     {
         RaycastHit hit;
         lookDir = cam.gameObject.transform.forward;
         Debug.DrawRay(cam.transform.position, lookDir*selectDist);
+        
         if (Physics.Raycast(cam.transform.position, lookDir, out hit, selectDist) && 
             selectableTags.Contains(hit.collider.tag))
         {
             if (hit.collider.gameObject != highlightedObject)
-            {
                 SelectObject(hit.collider.gameObject);
-            }
 
             if (highlightedObject.CompareTag("Screen"))
-            {
                 highlightedObject.transform.parent.GetComponent<ScreenScript>().ScreenMouseOver(hit.textureCoord);
-            }
 
-            if (Input.GetMouseButtonDown(0)) //Left click down
+            if (Mouse.current.leftButton.wasPressedThisFrame) //Left click down
             {
                 switch (highlightedObject.tag)
                 {
                     case "Screen":
                         ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
-                        highlightedObject.SendMessage("Down",screen.mouseOver);
+                        if (screen.mouseOver!=null)
+                            highlightedObject.SendMessage("Down",screen.mouseOver, 
+                                SendMessageOptions.DontRequireReceiver);
                         break;
                     default:
                         Debug.Log($"Interacted With {highlightedObject}");
                         break;
                 }
             }
-            else if (Input.GetMouseButtonUp(0)) //Left Click Up
+            else if (Mouse.current.leftButton.wasReleasedThisFrame) //Left Click Up
             {
                 switch (highlightedObject.tag)
                 {
                     case "Screen":
                         ScreenScript screen = highlightedObject.transform.parent.GetComponent<ScreenScript>();
-                        highlightedObject.SendMessage("Up",screen.mouseOver);
+                        if (screen.mouseOver!=null)
+                            highlightedObject.SendMessage("Up",screen.mouseOver,
+                                SendMessageOptions.DontRequireReceiver);
                         break;
                 }
             }
         }
-        else
-        {
-            DeselectObject();
-        }
+        else DeselectObject();
     }
 
     void SelectObject(GameObject newHighlight)
     {
-        if (highlightedObject != null)
-        {
-            DeselectObject();
-        }
-
+        if (highlightedObject != null) DeselectObject();
         highlightedObject = newHighlight;
         nativeMat = highlightedObject.GetComponent<MeshRenderer>().material;
         if (selectMat != null && !highlightedObject.CompareTag("Screen"))
-        {
             highlightedObject.GetComponent<MeshRenderer>().material = selectMat;
-        }
     }
 
     void DeselectObject()

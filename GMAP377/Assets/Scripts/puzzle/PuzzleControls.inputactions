@@ -7,7 +7,7 @@
             "id": "5c6e6f53-69d9-43a7-a83a-660fba3a7851",
             "actions": [
                 {
-                    "name": "DrawLine",
+                    "name": "Generate New Puzzle",
                     "type": "Button",
                     "id": "8a13acae-fb3b-4d1c-b8b9-6962ed70dcf4",
                     "expectedControlType": "",
@@ -21,11 +21,11 @@
                 {
                     "name": "",
                     "id": "91908227-3fc8-42d6-ad8f-d112c7c6447a",
-                    "path": "<Mouse>/leftButton",
+                    "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "DrawLine",
+                    "action": "Generate New Puzzle",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
