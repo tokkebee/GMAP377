@@ -46,7 +46,7 @@ public class Monster : MonoBehaviour
         //Constructing Behavior Tree
 
         //Creating the main behaviors
-        //highest to lowest priority: attack --> chase --> investigate --> patrol
+        //highest to lowest priority: attack --> (hold) --> chase --> investigate --> patrol
         AttackStrategy attackStrategy = new AttackStrategy(agent, attackDuration, attackRecoveryDuration, attackCooldown);
         Sequence attack = new Sequence("Attack", 40);
         attack.AddChild(new Leaf("CanSeePlayer", new Condition(() => vision.canSeePlayer)));
@@ -56,6 +56,12 @@ public class Monster : MonoBehaviour
                 Debug.Log("Monster entering attacking behavior.", this
             ))));
         attack.AddChild(new Leaf("PerformAttack", attackStrategy));
+
+        //priority 35: in range but attack is on cooldown, so stay put
+        ReactiveSequence hold = new ReactiveSequence("HoldPosition", 35);
+        hold.AddChild(new Leaf("CanSeePlayer", new Condition(() => vision.canSeePlayer)));
+        hold.AddChild(new Leaf("IsPlayerInAttackRange", new Condition(() => IsPlayerInAttackRange())));
+        hold.AddChild(new Leaf("Hold", new HoldPositionStrategy(agent)));
 
         //priority 30: chase when player is visible
         ReactiveSequence  chase = new ReactiveSequence ("Chase", 30);
@@ -104,6 +110,7 @@ public class Monster : MonoBehaviour
         PrioritySelector behaviors = new PrioritySelector("MonsterBehaviors");
 
         behaviors.AddChild(attack);
+        behaviors.AddChild(hold);
         behaviors.AddChild(chase);
         behaviors.AddChild(investigate);
         behaviors.AddChild(patrol);

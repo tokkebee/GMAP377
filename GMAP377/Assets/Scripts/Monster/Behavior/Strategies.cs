@@ -233,6 +233,22 @@ namespace Pathfinding.BehaviourTrees {
         }
     }
 
+    public class HoldPositionStrategy : IStrategy {
+        private readonly NavMeshAgent agent;
+
+        public HoldPositionStrategy(NavMeshAgent agent) {
+            this.agent = agent;
+        }
+
+        public Node.Status Process() {
+            if (agent.isOnNavMesh && agent.hasPath) {
+                agent.ResetPath();
+                agent.velocity = Vector3.zero;
+            }
+            return Node.Status.Running;
+        }
+    }
+
     public class SearchStrategy : IStrategy {
         private readonly float searchDuration;
         private float elapsed;
