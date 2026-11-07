@@ -1,15 +1,40 @@
 using UnityEngine;
 
 public class UIManager : MonoBehaviour {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+    [Header("GUI Panels")]
+    [SerializeField] private GameObject hudPanel;
+    [SerializeField] private GameObject winPanel;
+    [SerializeField] private GameObject losePanel;
+
+    private void OnEnable() {
+        GameManager.OnStateChanged += UpdateUI;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    private void OnDisable() {
+        GameManager.OnStateChanged -= UpdateUI;
+    }
+
+    private void UpdateUI(GameState newState) {
+        hudPanel.SetActive(false);
+        winPanel.SetActive(false);
+        losePanel.SetActive(false);
+
+        switch (newState) {
+            case GameState.MainMenu:
+                //awaiting logic
+                break;
+            case GameState.Paused:
+                //awaiting logic
+                break;
+            case GameState.Playing:
+                hudPanel.SetActive(true);
+                break;
+            case GameState.Win:
+                winPanel.SetActive(true);
+                break;
+            case GameState.Lose:
+                losePanel.SetActive(true);
+                break;
+        }
     }
 }

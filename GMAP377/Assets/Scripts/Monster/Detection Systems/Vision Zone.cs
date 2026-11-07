@@ -19,7 +19,7 @@ public class VisionZone : MonoBehaviour
         }
         
         monsterVision.EnterVision(visionType);
-        Debug.Log($"{visionType}: Player entered vision zone");
+        //Debug.Log($"{visionType}: Player entered vision zone");
     }
 
     private void OnTriggerExit(Collider other)
@@ -29,7 +29,7 @@ public class VisionZone : MonoBehaviour
         }
         
         monsterVision.ExitVision(visionType);
-        Debug.Log($"{visionType}: Player exited vision zone");
+        //Debug.Log($"{visionType}: Player exited vision zone");
     }
 
     private void OnDisable()

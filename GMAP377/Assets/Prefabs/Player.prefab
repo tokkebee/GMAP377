@@ -152,6 +152,7 @@ GameObject:
   - component: {fileID: 5852524354757834611}
   - component: {fileID: 103849064441575424}
   - component: {fileID: 538943397703365213}
+  - component: {fileID: 5507890436498271229}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -321,3 +322,17 @@ MonoBehaviour:
   - Screen
   - Pickup
   - ElectricalLever
+--- !u!114 &5507890436498271229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3685840249312572578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 029f41f29a3dbf64ab7fb69cd6234eac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 1
+  currentHealth: 0

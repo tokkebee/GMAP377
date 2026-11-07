@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour {
     [SerializeField] private float maxHealth = 1f;
     [SerializeField] private float currentHealth;
+    private bool isDead;
 
     public static event Action<float> OnHealthChanged; //passes percentage. currentHealth / maxHealth
     public static event Action OnDamageTaken;
@@ -19,9 +20,11 @@ public class PlayerHealth : MonoBehaviour {
 
     private void Start() {
         currentHealth = maxHealth;
+        isDead = false;
     }
 
     private void TakeDamage(float damage) {
+        if (isDead) return;
         currentHealth -= damage;
         OnHealthChanged?.Invoke(currentHealth / maxHealth);
         OnDamageTaken?.Invoke();
@@ -32,8 +35,8 @@ public class PlayerHealth : MonoBehaviour {
     }
 
     private void PlayerDeath() {
-        if (currentHealth > 0f) return;
-
+        isDead = true;
+        Debug.Log("Player died");
         OnPlayerDeath?.Invoke();
     }
 }

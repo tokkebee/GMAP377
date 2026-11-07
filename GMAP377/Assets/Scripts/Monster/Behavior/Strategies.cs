@@ -24,8 +24,8 @@ namespace Pathfinding.BehaviourTrees {
         private bool isAttacking;
         private bool isRecovering;
 
-        public event Action OnAttackStarted;
-        public event Action OnAttackFinished;
+        public static event Action OnAttackStarted;
+        public static event Action OnAttackFinished;
 
         public AttackStrategy(NavMeshAgent agent, float attackDuration, float recoveryDuration, float attackCooldown) {
             this.agent = agent;
@@ -75,7 +75,6 @@ namespace Pathfinding.BehaviourTrees {
                 nextAttackTime = Time.time + attackCooldown;
 
                 if (agent.isOnNavMesh) {
-                    agent.velocity = Vector3.zero;
                     agent.isStopped = false;
                 }
                 return Node.Status.Success;
@@ -85,13 +84,14 @@ namespace Pathfinding.BehaviourTrees {
         }
 
         public void Reset() {
+            if (isAttacking || isRecovering) {
+                if (agent.isOnNavMesh) {
+                    agent.isStopped = false;
+                }
+            }
+
             isAttacking = false;
             isRecovering = false;
-
-            if (agent.isOnNavMesh) {
-                agent.velocity = Vector3.zero;
-                agent.isStopped = false;
-            }
         }
     }
 
@@ -197,15 +197,19 @@ namespace Pathfinding.BehaviourTrees {
     public class MoveToPositionStrategy : IStrategy {
         private readonly NavMeshAgent agent;
         private readonly Func<Vector3> getDestination;
+        private readonly float movementSpeed;
 
-        public MoveToPositionStrategy(NavMeshAgent agent, Func<Vector3> getDestination) {
+        public MoveToPositionStrategy(NavMeshAgent agent, Func<Vector3> getDestination, float movementSpeed) {
             this.agent = agent;
             this.getDestination = getDestination;
+            this.movementSpeed = movementSpeed;
         }
 
         public Node.Status Process() {
             if (!agent.isOnNavMesh)
                 return Node.Status.Failure;
+
+            agent.speed = movementSpeed;
             
             Vector3 destination = getDestination();
 

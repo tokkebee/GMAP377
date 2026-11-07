@@ -1,4 +1,5 @@
 using System;
+using Pathfinding.BehaviourTrees;
 using UnityEngine;
 
 //This script handles damage
@@ -12,10 +13,27 @@ public class MonsterCombat : MonoBehaviour {
 
     public static Action<float> OnMonsterDealtDamage; //sends amount of damage
 
-    void OnCollisionEnter(Collision collision) {
-        if (((1 << collision.gameObject.layer) & playerLayer.value) != 0) {
+    private void OnEnable() {
+        AttackStrategy.OnAttackFinished += TryHit;
+    }
+
+    private void OnDisable() {
+        AttackStrategy.OnAttackFinished -= TryHit;
+    }
+
+    private void TryHit() {
+        Bounds bounds = leg.bounds;
+        Collider[] hits = Physics.OverlapBox(bounds.center, bounds.extents, leg.transform.rotation, playerLayer);
+
+        if (hits.Length > 0) {
+            Debug.Log("Monster hit the player", this);
             OnMonsterDealtDamage?.Invoke(damage);
         }
     }
 
+    // void OnCollisionEnter(Collision collision) {
+    //     if (((1 << collision.gameObject.layer) & playerLayer.value) != 0) {
+    //         OnMonsterDealtDamage?.Invoke(damage);
+    //     }
+    // }
 }

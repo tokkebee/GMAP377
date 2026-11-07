@@ -1,6 +1,5 @@
 using System.Collections;
 using Pathfinding.BehaviourTrees;
-using Unity.VisualScripting;
 using UnityEngine;
 
 //THIS IS A TEMPORARY SCRIPT. placeholder for animation
@@ -23,47 +22,20 @@ public class LegAnimation : MonoBehaviour {
 
     private Coroutine animationRoutine;
 
-    // private void OnEnable() {
-    //     if (monster == null || monster.AttackStrategy == null) {
-    //         Debug.LogWarning("LegAnimation: Monster or AttackStrategy reference is missing.", this);
-    //         return;
-    //     };
+    private void OnEnable() {
+        AttackStrategy.OnAttackStarted += PlayAttackAnimation;
+        AttackStrategy.OnAttackFinished += PlayRecoveryAnimation;
+    }
 
-    //     monster.AttackStrategy.OnAttackStarted += PlayAttackAnimation;
-    //     monster.AttackStrategy.OnAttackFinished += PlayRecoveryAnimation;
-    // }
-
-    // private void OnDisable() {
-    //     if (monster != null && monster.AttackStrategy != null) {
-    //         monster.AttackStrategy.OnAttackStarted -= PlayAttackAnimation;
-    //         monster.AttackStrategy.OnAttackFinished -= PlayRecoveryAnimation;
-    //     }
-
-    //     StopAnimation();
-    // }
+    private void OnDisable() {
+        AttackStrategy.OnAttackStarted -= PlayAttackAnimation;
+        AttackStrategy.OnAttackFinished -= PlayRecoveryAnimation;
+        StopAnimation();
+    }
 
     private void Awake() {
         restingLocalPosition = transform.localPosition;
         restingLocalRotation = transform.localRotation;
-    }
-
-    private void Start() {
-        if (monster == null || monster.AttackStrategy == null) {
-            Debug.LogWarning("LegAnimation: Monster or AttackStrategy reference is missing.", this);
-            return;
-        };
-
-        monster.AttackStrategy.OnAttackStarted += PlayAttackAnimation;
-        monster.AttackStrategy.OnAttackFinished += PlayRecoveryAnimation;
-    }
-
-    private void OnDestroy() {
-        if (monster != null && monster.AttackStrategy != null) {
-            monster.AttackStrategy.OnAttackStarted -= PlayAttackAnimation;
-            monster.AttackStrategy.OnAttackFinished -= PlayRecoveryAnimation;
-        }
-
-        StopAnimation();
     }
 
     //Attack Animation
@@ -83,9 +55,9 @@ public class LegAnimation : MonoBehaviour {
         Vector3 attackPosition = parent.InverseTransformPoint(attackTransform.position);
         Quaternion attackRotation = Quaternion.Inverse(parent.rotation) * attackTransform.rotation;
 
-        Debug.Log($"Rest position: {restingLocalPosition}");
-        Debug.Log($"Windup position: {windupPosition}");
-        Debug.Log($"Attack position: {attackPosition}");
+        // Debug.Log($"Rest position: {restingLocalPosition}");
+        // Debug.Log($"Windup position: {windupPosition}");
+        // Debug.Log($"Attack position: {attackPosition}");
         
         yield return MoveToLocalTransform(windupPosition, windupRotation, windupDuration);
         yield return MoveToLocalTransform(attackPosition, attackRotation, attackDuration);
