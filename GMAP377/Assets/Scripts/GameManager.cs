@@ -69,7 +69,6 @@ public class GameManager : MonoBehaviour {
 
     //Completely restarts game to new game file
     public void RestartGame() {
-        Debug.Log("RestartGame clicked");
         //TODO: restart logic
         Time.timeScale = 1f;
 

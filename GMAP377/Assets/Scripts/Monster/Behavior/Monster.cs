@@ -21,8 +21,13 @@ public class Monster : MonoBehaviour
     [SerializeField] private float searchDuration = 4f;
 
     [Header("Attack Settings")]
-    [SerializeField] private float attackRange = 2f;
+    [Tooltip("Where the leg lands, in the monster's local space (z = forward). Match this to your attack pose.")]
+    [SerializeField] private Vector3 strikeOffset = new Vector3(0f, 0f, 1.5f);
+    private Vector3 StrikePoint => transform.position + transform.rotation * strikeOffset;
+    [Tooltip("How close the STRIKE POINT must be to the player to attack (not the monster's pivot).")]
+    [SerializeField] private float attackRange = 0.6f;
     [SerializeField] private float attackDuration = 0.7f;
+    [SerializeField] private float turnSpeed = 360f;
     [SerializeField] private float attackRecoveryDuration = 0.4f;
     [SerializeField] private float attackCooldown = 1f;
 
@@ -68,7 +73,7 @@ public class Monster : MonoBehaviour
         //         return shouldInvestigate;
         //     })));
         // chase.AddChild(new Leaf("CanChase", new Condition(() => vision.shouldChase && vision.canSeePlayer)));
-        chase.AddChild(new Leaf("MoveToPlayer", new MoveToPositionStrategy(agent, () => player.transform.position, chaseSpeed)));
+        chase.AddChild(new Leaf("MoveToPlayer", new MoveToPositionStrategy(agent, () => GetStrikeStandPosition(), chaseSpeed)));
 
         //priority 20: investigate
         //todo. feeling of investigation is lackluster
@@ -112,7 +117,24 @@ public class Monster : MonoBehaviour
     }
 
     private bool IsPlayerInAttackRange() {
-        return Vector3.Distance(transform.position, player.position) <= attackRange;
+        Vector3 delta = StrikePoint - player.position;
+        delta.y = 0f; // ignore height differences
+        return delta.sqrMagnitude <= attackRange * attackRange;
     }
 
+    private Vector3 GetStrikeStandPosition() {
+
+        Vector3 toPlayer = player.position - transform.position;
+        toPlayer.y = 0f;
+        if (toPlayer.sqrMagnitude < 0.001f) return transform.position;
+
+        Vector3 flatOffset = strikeOffset;
+        flatOffset.y = 0f;
+        return player.position - toPlayer.normalized * flatOffset.magnitude;
+    }
+
+    private void OnDrawGizmosSelected() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(StrikePoint, attackRange);
+    }
 }
