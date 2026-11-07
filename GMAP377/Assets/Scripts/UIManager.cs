@@ -1,10 +1,15 @@
+using System;
 using UnityEngine;
+using GameState = GameManager.GameState;
 
 public class UIManager : MonoBehaviour {
     [Header("GUI Panels")]
     [SerializeField] private GameObject hudPanel;
     [SerializeField] private GameObject winPanel;
     [SerializeField] private GameObject losePanel;
+
+    public static event Action<GameState> OnGamePaused;
+    public static event Action<GameState> OnGameUnPaused;
 
     private void OnEnable() {
         GameManager.OnStateChanged += UpdateUI;

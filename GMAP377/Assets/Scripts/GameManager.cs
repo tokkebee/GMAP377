@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 //This script handles game states.
 //All other systems listen to OnStateChanged event
 
-public enum GameState {
+public class GameManager : MonoBehaviour {
+    public enum GameState {
         MainMenu, //TODO: implement logic for "Main Menu" state
         Paused, //TODO: implement logic for "Paused" state
         Playing,
@@ -13,7 +14,6 @@ public enum GameState {
         Lose
     }
 
-public class GameManager : MonoBehaviour {
     [SerializeField] private GameState currentGameState;
     public static event Action<GameState> OnStateChanged;
 
@@ -25,22 +25,25 @@ public class GameManager : MonoBehaviour {
         PlayerHealth.OnPlayerDeath -= GameOver;
     }
 
+    private void Start() {
+        ApplyState(currentGameState);
+        OnStateChanged?.Invoke(currentGameState);
+    }
+
+    public void TogglePause() {
+        if (currentGameState == GameState.Playing) ChangeState(GameState.Paused);
+        else if (currentGameState == GameState.Paused) ChangeState(GameState.Playing);
+    }
+
     //Spawns player at the passed position
+    //This logic should be moved to a player manager script
     private void SpawnPlayer(Transform position) {
         //Ollie is leaving this open for now.
         //Intention is that the Save/File system saves checkpoints and passed those checkpoints here upon respawn
     }
 
-    //Completely restarts game to new game file
-    public void RestartGame() {
-        //TODO: restart logic
-
-        //TEMPORARY. MUST BE REPLACED
-        SceneManager.LoadScene("Monster_UnitTest");
-    }
-
     public void QuitGame() {
-        //Debug.Log("Successfully quit to desktop!");
+        Debug.Log("Successfully quit to desktop!");
         Application.Quit();
     }
 
@@ -52,7 +55,25 @@ public class GameManager : MonoBehaviour {
         if (currentGameState == newState) return;
 
         currentGameState = newState;
-
+        ApplyState(newState);
         OnStateChanged?.Invoke(newState);
+    }
+
+    public void ApplyState(GameState state) {
+        bool frozen = state != GameState.Playing;
+        Cursor.lockState = frozen ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = frozen;
+        Time.timeScale = frozen ? 0f : 1f;
+        AudioListener.pause = state == GameState.Paused;
+    }
+
+    //Completely restarts game to new game file
+    public void RestartGame() {
+        Debug.Log("RestartGame clicked");
+        //TODO: restart logic
+        Time.timeScale = 1f;
+
+        //TEMPORARY. MUST BE REPLACED
+        SceneManager.LoadScene("Monster_UnitTest");
     }
 }

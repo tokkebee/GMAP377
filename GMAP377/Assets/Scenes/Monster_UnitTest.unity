@@ -982,9 +982,9 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 845769727}
   - {fileID: 227668964}
   - {fileID: 1024719064}
+  - {fileID: 845769727}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1253,7 +1253,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 845769726}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -3083,6 +3083,18 @@ PrefabInstance:
     - target: {fileID: 7429776396519867540, guid: 981a5a6dacd2c954884e87b752cb1611, type: 3}
       propertyPath: m_Name
       value: Monster_Temp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8761915124077448666, guid: 981a5a6dacd2c954884e87b752cb1611, type: 3}
+      propertyPath: m_Size.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8761915124077448666, guid: 981a5a6dacd2c954884e87b752cb1611, type: 3}
+      propertyPath: m_Size.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8761915124077448666, guid: 981a5a6dacd2c954884e87b752cb1611, type: 3}
+      propertyPath: m_Size.z
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8761915124077448666, guid: 981a5a6dacd2c954884e87b752cb1611, type: 3}
       propertyPath: m_IncludeLayers.m_Bits
