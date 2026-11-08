@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour {
         Lose
     }
 
+    [SerializeField] private string sceneName = "AlphaScene";
     [SerializeField] private GameState currentGameState;
     public static event Action<GameState> OnStateChanged;
 
@@ -73,6 +74,6 @@ public class GameManager : MonoBehaviour {
         Time.timeScale = 1f;
 
         //TEMPORARY. MUST BE REPLACED
-        SceneManager.LoadScene("Monster_UnitTest");
+        SceneManager.LoadScene(sceneName);
     }
 }

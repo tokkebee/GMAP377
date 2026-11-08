@@ -13,6 +13,8 @@ public class LegAnimation : MonoBehaviour {
     [SerializeField] private Transform attackTransform;
     private Vector3 restingLocalPosition;
     private Quaternion restingLocalRotation;
+    [SerializeField] private Transform tip;   // empty child of the leg, at the contact point
+    private Vector3 tipOffset;
 
     [Header("Animation Durations")]
     //windup and attack durations should equal attackDuration in Monster.cs
@@ -63,6 +65,17 @@ public class LegAnimation : MonoBehaviour {
         yield return MoveToLocalTransform(attackPosition, attackRotation, attackDuration);
 
         animationRoutine = null;
+
+        Debug.Log($"Pivot to attack marker: {Vector3.Distance(transform.position, attackTransform.position)}");
+    }
+
+    private void GetLocalPose(Transform target, out Vector3 pos, out Quaternion rot) {
+        Transform parent = transform.parent;
+        Vector3 worldPos = target.position;
+        if (tip != null) worldPos -= target.rotation * tipOffset;
+
+        pos = parent.InverseTransformPoint(worldPos);
+        rot = Quaternion.Inverse(parent.rotation) * target.rotation;
     }
 
     //Recovery Animation

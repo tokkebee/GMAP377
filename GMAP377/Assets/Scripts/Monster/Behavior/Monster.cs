@@ -117,10 +117,28 @@ public class Monster : MonoBehaviour
 
         tree = new BehaviourTree("Monster");
         tree.AddChild(behaviors);
+
+        agent.updateRotation = false;
     }
 
     void Update() {
         tree.Process();
+        bool facingPlayer = FacePlayerIfClose();
+        agent.updateRotation = !facingPlayer;
+    }
+
+    private bool FacePlayerIfClose() {
+        if (!vision.canSeePlayer) return false;
+
+        Vector3 toPlayer = player.position - transform.position;
+        toPlayer.y = 0f;
+        if (toPlayer.sqrMagnitude < 0.0001f) return false;
+        if (toPlayer.magnitude > strikeOffset.magnitude + 1f) return false; // only when near
+
+        Quaternion target = Quaternion.LookRotation(toPlayer);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, target, turnSpeed * Time.deltaTime);
+
+        return true;
     }
 
     private bool IsPlayerInAttackRange() {
