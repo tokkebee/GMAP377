@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1138034935044483021}
   - component: {fileID: 1243426764071988897}
   m_Layer: 0
-  m_Name: Corroda
+  m_Name: PlayerCar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
