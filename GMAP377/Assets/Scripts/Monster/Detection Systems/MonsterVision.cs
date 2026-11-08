@@ -56,7 +56,7 @@ public class MonsterVision : MonoBehaviour {
             return false;
         }
 
-        Debug.Log("Line of sight clear");
+        //Debug.Log("Line of sight clear");
         return true;
     }
 

@@ -1,13 +1,97 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.AI;
+using UnityEngine.AI;
 
 namespace Pathfinding.BehaviourTrees {
     public interface IStrategy {
         Node.Status Process();
         void Reset() {
             //
+        }
+    }
+
+    public class AttackStrategy : IStrategy {
+        private readonly NavMeshAgent agent;
+        private readonly float attackDuration;
+        private readonly float recoveryDuration;
+        private readonly float attackCooldown;
+
+        private float attackEndTime;
+        private float recoveryEndTime;
+        private float nextAttackTime;
+
+        private bool isAttacking;
+        private bool isRecovering;
+
+        public static event Action OnAttackStarted;
+        public static event Action OnAttackFinished;
+
+        public AttackStrategy(NavMeshAgent agent, float attackDuration, float recoveryDuration, float attackCooldown) {
+            this.agent = agent;
+            this.attackDuration = attackDuration;
+            this.recoveryDuration = recoveryDuration;
+            this.attackCooldown = attackCooldown;
+        }
+
+        public Node.Status Process() {
+            //Start the attack
+            if (!isAttacking && !isRecovering) {
+                if (Time.time < nextAttackTime)
+                    return Node.Status.Failure;
+                
+                isAttacking = true;
+
+                if (agent.isOnNavMesh) {
+                    agent.isStopped = true;
+                    agent.ResetPath();
+                    agent.velocity = Vector3.zero;
+                }
+
+                attackEndTime = Time.time + attackDuration;
+                OnAttackStarted?.Invoke();
+                return Node.Status.Running;
+            }
+
+            //Continuing the attack
+            if (isAttacking) {
+                if (Time.time < attackEndTime)
+                    return Node.Status.Running;
+                
+                isAttacking = false;
+                isRecovering = true;
+
+                recoveryEndTime = Time.time + recoveryDuration;
+                OnAttackFinished?.Invoke();
+                return Node.Status.Running;
+            }
+            
+            //Finish the attack
+            if (isRecovering) {
+                if (Time.time < recoveryEndTime)
+                    return Node.Status.Running;
+
+                isRecovering = false;
+                nextAttackTime = Time.time + attackCooldown;
+
+                if (agent.isOnNavMesh) {
+                    agent.isStopped = false;
+                }
+                return Node.Status.Success;
+            }
+
+            return Node.Status.Failure;
+        }
+
+        public void Reset() {
+            if (isAttacking || isRecovering) {
+                if (agent.isOnNavMesh) {
+                    agent.isStopped = false;
+                }
+            }
+
+            isAttacking = false;
+            isRecovering = false;
         }
     }
 
@@ -36,13 +120,13 @@ namespace Pathfinding.BehaviourTrees {
 
     public class PatrolStrategy : IStrategy {
         readonly Transform entity;
-        readonly UnityEngine.AI.NavMeshAgent agent;
+        readonly NavMeshAgent agent;
         readonly List<Transform> patrolPoints;
         readonly float patrolSpeed;
         int currentIndex;
         bool isPathCalculated;
 
-        public PatrolStrategy(Transform entity, UnityEngine.AI.NavMeshAgent agent, List<Transform> patrolPoints, float patrolSpeed = 2f) {
+        public PatrolStrategy(Transform entity, NavMeshAgent agent, List<Transform> patrolPoints, float patrolSpeed = 2f) {
             this.entity = entity;
             this.agent = agent;
             this.patrolPoints = patrolPoints;
@@ -75,7 +159,7 @@ namespace Pathfinding.BehaviourTrees {
                 return Node.Status.Running;
             }
 
-            if (agent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathInvalid) {
+            if (agent.pathStatus == NavMeshPathStatus.PathInvalid) {
                 return Node.Status.Failure;
             }
 
@@ -111,17 +195,21 @@ namespace Pathfinding.BehaviourTrees {
     }
 
     public class MoveToPositionStrategy : IStrategy {
-        private readonly UnityEngine.AI.NavMeshAgent agent;
+        private readonly NavMeshAgent agent;
         private readonly Func<Vector3> getDestination;
+        private readonly float movementSpeed;
 
-        public MoveToPositionStrategy(UnityEngine.AI.NavMeshAgent agent, Func<Vector3> getDestination) {
+        public MoveToPositionStrategy(NavMeshAgent agent, Func<Vector3> getDestination, float movementSpeed) {
             this.agent = agent;
             this.getDestination = getDestination;
+            this.movementSpeed = movementSpeed;
         }
 
         public Node.Status Process() {
             if (!agent.isOnNavMesh)
                 return Node.Status.Failure;
+
+            agent.speed = movementSpeed;
             
             Vector3 destination = getDestination();
 
@@ -133,7 +221,7 @@ namespace Pathfinding.BehaviourTrees {
                 return Node.Status.Running;
             }
 
-            if (agent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathInvalid) {
+            if (agent.pathStatus == NavMeshPathStatus.PathInvalid) {
                 return Node.Status.Failure;
             }
 
@@ -142,6 +230,22 @@ namespace Pathfinding.BehaviourTrees {
             }
 
             return Node.Status.Running; //haha literally
+        }
+    }
+
+    public class HoldPositionStrategy : IStrategy {
+        private readonly NavMeshAgent agent;
+
+        public HoldPositionStrategy(NavMeshAgent agent) {
+            this.agent = agent;
+        }
+
+        public Node.Status Process() {
+            if (agent.isOnNavMesh && agent.hasPath) {
+                agent.ResetPath();
+                agent.velocity = Vector3.zero;
+            }
+            return Node.Status.Running;
         }
     }
 

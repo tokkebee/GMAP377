@@ -188,16 +188,6 @@ namespace Pathfinding.BehaviourTrees {
             }
 
             return status;
-
-            // //old method gets stuck after first successful run
-            // while (currentChild < children.Count) {
-            //     var status = children[currentChild].Process();
-            //     if (status != Status.Success) {
-            //         return status;
-            //     }
-            //     currentChild++;
-            // }
-            // return Status.Success;
         }
     }
 }
