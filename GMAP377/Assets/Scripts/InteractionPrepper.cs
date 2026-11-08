@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -17,8 +18,25 @@ public class InteractionPrepper : MonoBehaviour
     [SerializeField] private Camera cam;
     [SerializeField] private Vector3 lookDir;
     [SerializeField] private List<string> selectableTags;
+
+    private GameManagerScript gameManager;
     private Material nativeMat;
     //TEST TEST TEST
+    private void OnEnable()
+    {
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        gameManager = FindAnyObjectByType<GameManagerScript>();
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
     void Start()
     {
         movement = GetComponent<BasicMovement>();
@@ -49,6 +67,22 @@ public class InteractionPrepper : MonoBehaviour
                         highlightedObject.SendMessage("Down",screen.mouseOver, 
                             SendMessageOptions.DontRequireReceiver);
                         break;
+                    case "Door":
+                        highlightedObject.SendMessage("Travel");
+                        //Debug.Log("Door Clicked");
+                        break;
+                    case "Pickup":
+                        //Debug.Log($"{highlightedObject} clicked on");
+                        if (!gameManager.inventory.Contains(highlightedObject.name))
+                        {
+                            gameManager.inventory.Add(highlightedObject.name);
+                            //Debug.Log($"{highlightedObject} picked up");
+                            Destroy(highlightedObject);
+                        }
+                        break;
+                    case "Car":
+                        highlightedObject.SendMessage("Repair");
+                    break;
                     default:
                         Debug.Log($"Interacted With {highlightedObject}");
                         break;

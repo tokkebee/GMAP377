@@ -56,7 +56,6 @@ public class BasicMovement : MonoBehaviour
         CameraManagement(); //Manages camera on update
         if (InputSystem.actions["Crouch"].WasPressedThisFrame() && !transitioning)
         {
-            Debug.Log(charCon.isGrounded);
             Crouching();
         }
     }
@@ -120,7 +119,6 @@ public class BasicMovement : MonoBehaviour
         float currentHeight = charCon.height;
         float elapsedTime = 0.0f; //time passed each frame
         transitioning = true;
-        Debug.Log("Start Transitioning");
         while (elapsedTime < crouchTime)
         {
             elapsedTime += Time.deltaTime;
@@ -129,9 +127,8 @@ public class BasicMovement : MonoBehaviour
             yield return null;
         }
         charCon.height = targetHeight;
-        isCrouching = isCrouching ? false : true;
+        isCrouching = !isCrouching;
         transitioning = false;
-        Debug.Log("Done Transitioning");
     }
     
     void CameraManagement()
