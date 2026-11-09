@@ -3295,6 +3295,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1117496548}
   - component: {fileID: 1117496547}
+  - component: {fileID: 1117496549}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -3331,6 +3332,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1117496549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1117496546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5efae089a0f65e04fae070990c348ee1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManagerScript
+  player: {fileID: 1759237515}
+  spawnPoint: {x: -106.71, y: 2.115, z: 45.11}
+  spawnRotation: {x: 0, y: 0.98179334, z: 0, w: 0.18995228}
+  inventory: []
 --- !u!1 &1121541502
 GameObject:
   m_ObjectHideFlags: 0
@@ -5488,6 +5505,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1759237515 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3685840249312572578, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
+  m_PrefabInstance: {fileID: 1260937392860616392}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1768160626
 GameObject:
   m_ObjectHideFlags: 0
@@ -7205,7 +7227,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 3c6c633f0e6d73546bf082baddf6c9fa, type: 2}
     - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
       propertyPath: selectableTags.Array.size
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
       propertyPath: 'selectableTags.Array.data[0]'
@@ -7218,6 +7240,14 @@ PrefabInstance:
     - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
       propertyPath: 'selectableTags.Array.data[2]'
       value: ElectricalLever
+      objectReference: {fileID: 0}
+    - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
+      propertyPath: 'selectableTags.Array.data[3]'
+      value: Car
+      objectReference: {fileID: 0}
+    - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
+      propertyPath: 'selectableTags.Array.data[4]'
+      value: Pickup
       objectReference: {fileID: 0}
     - target: {fileID: 3685840249312572578, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
       propertyPath: m_Name
