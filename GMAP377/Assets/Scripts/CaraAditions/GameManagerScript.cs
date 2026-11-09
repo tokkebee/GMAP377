@@ -31,7 +31,7 @@ public class GameManagerScript : MonoBehaviour
 
     private static void ChangeScene(Scene from, Scene to)
     {
-        Instantiate(Instance.player, Instance.spawnPoint, Instance.spawnRotation);
+        //Instantiate(Instance.player, Instance.spawnPoint, Instance.spawnRotation);
         foreach (string item in Instance.inventory)
         {
             Destroy(GameObject.Find(item));

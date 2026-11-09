@@ -54,8 +54,10 @@ public class BasicMovement : MonoBehaviour
     private void Update()
     {
         CameraManagement(); //Manages camera on update
-        if (InputSystem.actions["Crouch"].WasPressedThisFrame() && !transitioning)
+        if ((InputSystem.actions["Crouch"].WasPressedThisFrame()||Input.GetKeyDown(KeyCode.LeftControl))
+            && !transitioning)
         {
+            Debug.Log("Crouch");
             Crouching();
         }
     }

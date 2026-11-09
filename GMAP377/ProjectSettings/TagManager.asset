@@ -7,6 +7,8 @@ TagManager:
   - Screen
   - Pickup
   - ElectricalLever
+  - Door
+  - Car
   layers:
   - Default
   - TransparentFX
