@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4271896914611083551
+--- !u!1 &7266165880408433592
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,60 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8287590468864659490}
-  - component: {fileID: 5313879358414650070}
-  - component: {fileID: 4143902012097579454}
-  - component: {fileID: 797172367635593461}
+  - component: {fileID: 8645493053780309251}
+  - component: {fileID: 4211674218259167414}
+  - component: {fileID: 4136985342797425347}
+  - component: {fileID: 780636389419658957}
+  - component: {fileID: 8589757883367156063}
   m_Layer: 0
-  m_Name: HousePlaceholder
-  m_TagString: Untagged
+  m_Name: CarPart
+  m_TagString: Pickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8287590468864659490
+--- !u!4 &8645493053780309251
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4271896914611083551}
+  m_GameObject: {fileID: 7266165880408433592}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 8.4, y: -4.69, z: 54.99}
+  m_LocalScale: {x: 1.6091249, y: 1.6091249, z: 1.6091249}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5313879358414650070
+--- !u!114 &4211674218259167414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7266165880408433592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87eb646a49eba454ea0367923184f2cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarPart
+--- !u!33 &4136985342797425347
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4271896914611083551}
-  m_Mesh: {fileID: -3491999453701739385, guid: e8e6d52e8042b3946849713468716750, type: 3}
---- !u!23 &4143902012097579454
+  m_GameObject: {fileID: 7266165880408433592}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &780636389419658957
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4271896914611083551}
+  m_GameObject: {fileID: 7266165880408433592}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -67,7 +80,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2efb0bf721813a940a506e7ec3906f03, type: 2}
+  - {fileID: 2100000, guid: fa777455a9ee64e4182070396b6b51c0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -91,13 +104,13 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &797172367635593461
+--- !u!65 &8589757883367156063
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4271896914611083551}
+  m_GameObject: {fileID: 7266165880408433592}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -110,5 +123,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 16.475513, y: 7.3523192, z: 13.040713}
-  m_Center: {x: 0.000003814699, y: 3.67616, z: 0.30285636}
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

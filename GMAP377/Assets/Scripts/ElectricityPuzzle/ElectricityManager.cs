@@ -13,12 +13,14 @@ public class ElectricityManager : MonoBehaviour
     //ALPHA MATERIAL - DELETE ONCE MORE POLISHED
     [SerializeField] private TextMeshPro mapText;
     [SerializeField] private Renderer safeRenderer;
+    [SerializeField] private GameObject CarPart;
 
     void Start()
     {
         targetNum = ChooseNum();
         mapText.text = $"={targetNum}";
         safeRenderer.material.color = Color.red;
+        CarPart.SetActive(false);
     }
     
     private int ChooseNum()
@@ -41,5 +43,6 @@ public class ElectricityManager : MonoBehaviour
     {
         Debug.Log("Lever Puzzle Solved");
         safeRenderer.material.color = Color.green;
+        CarPart.SetActive(true);
     }
 }
