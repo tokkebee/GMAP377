@@ -5,7 +5,9 @@ using UnityEngine;
 public class GlobalPuzzleManager : MonoBehaviour
 {
     [SerializeField] private PuzzleEngine[] puzzles;
-    [SerializeField] private Transform platform;
+    [SerializeField] private Transform poolSurface;
+    [SerializeField] private Collider poolCollider;
+    [SerializeField] private float dropAmount, dropTime;
 
     void Start()
     {
@@ -13,24 +15,25 @@ public class GlobalPuzzleManager : MonoBehaviour
     }
     void CheckedCompletedAllPuzzles()
     {
+        StartCoroutine(LowerPlatform());
         foreach(PuzzleEngine puzzle in puzzles)
         {
             if(!puzzle.gameWon) return;
         }
         Debug.Log("All clear");
-        StartCoroutine(RaisePlatform());
-        
+        poolCollider.enabled = false;
     }
-
-    IEnumerator RaisePlatform()
+    
+    IEnumerator LowerPlatform()
     {
-        
-        while(platform.position.y < 58)
+        float dropIncrement = (dropAmount / dropTime)/60;
+        Debug.Log(dropIncrement);
+        float timeElapsed = 0f;
+        while(timeElapsed<dropTime)
         {
-            platform.position += new Vector3(0, 0.01f);
-            yield return new WaitForSeconds(0.002f);
+            poolSurface.position += Vector3.down*dropIncrement;
+            timeElapsed += Time.deltaTime;
+            yield return null;
         }
-        yield return null;
-        
     }
 }
