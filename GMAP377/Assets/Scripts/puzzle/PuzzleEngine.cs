@@ -353,7 +353,7 @@ public class PuzzleEngine : InteractBase //Will switch to inherit from Interacti
         int minY = Mathf.Min(rows - 1, Mathf.Max(1, rows - 3));
         exitPos = new Vector2Int(Random.Range(minX, columns), Random.Range(minY, rows));
         List<Vector2Int> path = DFSWalkBoard(exitPos);
-        Debug.Log("Path: " + string.Join(", ", path.Select(p => p.ToString())));
+        Debug.Log($"{transform.parent.name} Path: " + string.Join(", ", path.Select(p => p.ToString())));
         int i = 0;
         char[,] newBoard = new char[columns, rows];
         foreach(Vector2Int cell in path)
