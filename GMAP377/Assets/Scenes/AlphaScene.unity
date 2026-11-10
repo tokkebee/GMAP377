@@ -158,6 +158,38 @@ Transform:
   - {fileID: 1185338091}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9855558
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9855559}
+  m_Layer: 7
+  m_Name: Debris
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9855559
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9855558}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 475114751}
+  m_Father: {fileID: 345504042}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &22189724
 GameObject:
   m_ObjectHideFlags: 0
@@ -1851,6 +1883,7 @@ Transform:
   - {fileID: 1838538908}
   - {fileID: 1428316146}
   - {fileID: 564990757}
+  - {fileID: 9855559}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &345504043
@@ -2287,6 +2320,68 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 2352043706179442500, guid: b65f9098bdd025f43b36f5e32839345b, type: 3}
   m_PrefabInstance: {fileID: 461533588}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &475114750
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 9855559}
+    m_Modifications:
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -210.392
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.71
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 127.678
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9990558
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.04344505
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -4.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123708027468869982, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+      propertyPath: m_Name
+      value: PF_WreckCarDoor_A
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+--- !u!4 &475114751 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2281288953904706504, guid: c279b5c2b6000a34f9867b0166fa9f5b, type: 3}
+  m_PrefabInstance: {fileID: 475114750}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &490344827
 GameObject:
