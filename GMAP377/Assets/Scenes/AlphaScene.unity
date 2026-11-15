@@ -10958,73 +10958,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: charCon
-      value: 
-      objectReference: {fileID: 1260937392860616397}
-    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: amplitude
-      value: 0.006
-      objectReference: {fileID: 0}
-    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: frequency
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: jumpForce
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: lookSpeed
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: bobEnabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: crouchTime
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 103849064441575424, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: crouchSpeed
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: selectMat
-      value: 
-      objectReference: {fileID: 2100000, guid: 3c6c633f0e6d73546bf082baddf6c9fa, type: 2}
-    - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: selectableTags.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: 'selectableTags.Array.data[0]'
-      value: Screen
-      objectReference: {fileID: 0}
-    - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: 'selectableTags.Array.data[1]'
-      value: Pickup
-      objectReference: {fileID: 0}
-    - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: 'selectableTags.Array.data[2]'
-      value: ElectricalLever
-      objectReference: {fileID: 0}
-    - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: 'selectableTags.Array.data[3]'
-      value: Car
-      objectReference: {fileID: 0}
-    - target: {fileID: 538943397703365213, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: 'selectableTags.Array.data[4]'
-      value: Pickup
-      objectReference: {fileID: 0}
     - target: {fileID: 3685840249312572578, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 3685840249312572578, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5436090071064215598, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11066,32 +11002,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5442326740870698552, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.12
-      objectReference: {fileID: 0}
-    - target: {fileID: 5442326740870698552, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7801202687797992425, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: field of view
-      value: 70
-      objectReference: {fileID: 0}
-    - target: {fileID: 7801202687797992425, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-      propertyPath: near clip plane
-      value: 0.1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
---- !u!143 &1260937392860616397 stripped
-CharacterController:
-  m_CorrespondingSourceObject: {fileID: 5852524354757834611, guid: 5327525a6173e484286ae3fabf3de57b, type: 3}
-  m_PrefabInstance: {fileID: 1260937392860616392}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5738739488687308342
 PrefabInstance:
   m_ObjectHideFlags: 0

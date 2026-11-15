@@ -14,6 +14,7 @@ public class ScreenScript : MonoBehaviour
     private EventSystem _eventSystem;
     private GraphicRaycaster _screenRay;
     private Transform _player;
+    [SerializeField] private bool interactable = true;
     [SerializeField] private Material onMat, offMat;
     [SerializeField] private float onDistance;
     [SerializeField] private RenderTexture screenTexture;
@@ -23,12 +24,11 @@ public class ScreenScript : MonoBehaviour
     {
         CreateScreenMat();
         screenRect = screenCanvas.gameObject.GetComponent<RectTransform>();
-        float x = screenRect.rect.width;
-        float y = screenRect.rect.height;
         _eventSystem = FindAnyObjectByType<EventSystem>();
         _screenRay = screenCanvas.GetComponent<GraphicRaycaster>();
         _player = FindAnyObjectByType<BasicMovement>().transform;
         if (screenObj == null) screenObj = transform.GetChild(0).GetComponent<MeshRenderer>();
+        mouseFollow.gameObject.SetActive(interactable);
     }
 
     private void FixedUpdate()
@@ -71,7 +71,8 @@ public class ScreenScript : MonoBehaviour
     
     public void ScreenMouseOver(Vector2 screenCoordinate)
     {
-        screenCoordinate = new Vector2(Mathf.Clamp01(screenCoordinate.x), Mathf.Clamp01(screenCoordinate.y));
+        if (!interactable) return;
+        screenCoordinate = new Vector2(Mathf.Clamp01(screenCoordinate.x), Mathf.Clamp01(screenCoordinate.y));//Clamp01 super helpful
         Vector2 size = screenRect.rect.size;
         Vector2 localPosition = new Vector2((screenCoordinate.x - screenRect.pivot.x) * size.x,
             (screenCoordinate.y - screenRect.pivot.y) * size.y);

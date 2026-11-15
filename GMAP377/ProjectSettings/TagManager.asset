@@ -9,6 +9,7 @@ TagManager:
   - ElectricalLever
   - Door
   - Car
+  - PuzzleButton
   layers:
   - Default
   - TransparentFX
