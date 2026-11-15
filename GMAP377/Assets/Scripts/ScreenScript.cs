@@ -12,34 +12,24 @@ public class ScreenScript : MonoBehaviour
     public Canvas screenCanvas;
     public MeshRenderer screenObj;
     private EventSystem _eventSystem;
-    private Vector2 _screenDimensions;
     private GraphicRaycaster _screenRay;
     private Transform _player;
-    [SerializeField] private Material onMat;
-    [SerializeField] private Material offMat;
+    [SerializeField] private Material onMat, offMat;
     [SerializeField] private float onDistance;
-    //TEST TEST TEST
+    [SerializeField] private RenderTexture screenTexture;
+    [SerializeField] private RectTransform screenRect;//UI Canvas  
+    
     private void Start()
     {
-        RectTransform screenRect = screenCanvas.gameObject.GetComponent<RectTransform>();
+        CreateScreenMat();
+        screenRect = screenCanvas.gameObject.GetComponent<RectTransform>();
         float x = screenRect.rect.width;
         float y = screenRect.rect.height;
-        _screenDimensions = new Vector2(x, y);
         _eventSystem = FindAnyObjectByType<EventSystem>();
         _screenRay = screenCanvas.GetComponent<GraphicRaycaster>();
         _player = FindAnyObjectByType<BasicMovement>().transform;
-        if (screenObj == null)
-        {
-            screenObj = transform.GetChild(0).GetComponent<MeshRenderer>();
-        }
-
-        if (onMat == null)
-        {
-            onMat = screenObj.material;
-        }
+        if (screenObj == null) screenObj = transform.GetChild(0).GetComponent<MeshRenderer>();
     }
-    
-
 
     private void FixedUpdate()
     {
@@ -64,18 +54,33 @@ public class ScreenScript : MonoBehaviour
         }
     }
     
-
-    public void ScreenMouseOver(Vector2 screenCoordinate) 
+    private void CreateScreenMat()
     {
-        //Updates Mouse Follow object. Coordinate components must come in as float between 0 and 1
-        float x = Mathf.Lerp(-_screenDimensions.x/2, _screenDimensions.x/2, screenCoordinate.x);
-        float y = Mathf.Lerp(-_screenDimensions.y/2, _screenDimensions.y/2, screenCoordinate.y);
-        mouseFollow.anchoredPosition = new Vector2(x,y);
-        //Raycasts, gets item.
-        Vector2 mouseFollowPosition = new(screenCoordinate.x * Screen.width, screenCoordinate.y * Screen.height);
-        PointerEventData pointerData = new PointerEventData(_eventSystem){position = mouseFollowPosition};
-        List<RaycastResult> coveredUI = new List<RaycastResult>();
-        _screenRay.Raycast(pointerData, coveredUI);
-        mouseOver = (coveredUI.Count > 0) ? coveredUI[0].gameObject : null;
+        screenTexture = new RenderTexture(1920, 1080, 16);
+        screenTexture.Create();
+        outputCamera.targetTexture = screenTexture;
+        var screenMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        screenMat.SetTexture("_BaseMap", screenTexture);
+        screenMat.EnableKeyword("_EMISSION");
+        screenMat.SetTexture("_EmissionMap", screenTexture);
+        screenMat.SetColor("_EmissionColor", Color.white);
+        screenMat.SetFloat("_Smoothness", 0.9f);
+
+        onMat = screenMat;
+    }
+    
+    public void ScreenMouseOver(Vector2 screenCoordinate)
+    {
+        screenCoordinate = new Vector2(Mathf.Clamp01(screenCoordinate.x), Mathf.Clamp01(screenCoordinate.y));
+        Vector2 size = screenRect.rect.size;
+        Vector2 localPosition = new Vector2((screenCoordinate.x - screenRect.pivot.x) * size.x,
+            (screenCoordinate.y - screenRect.pivot.y) * size.y);
+        mouseFollow.anchoredPosition = localPosition;
+        Vector2 pointerPosition = new Vector2(screenCoordinate.x * screenTexture.width,
+            screenCoordinate.y * screenTexture.height);
+        var pointerData = new PointerEventData(_eventSystem) { position = pointerPosition };
+        var results = new List<RaycastResult>();
+        _screenRay.Raycast(pointerData, results);
+        mouseOver = results.Count > 0 ? results[0].gameObject : null;
     }
 }
