@@ -46,10 +46,9 @@ public class PuzzleEngineAssetImport : InteractBase //Will switch to inherit fro
 
     public static Action puzzleCompleted;
     
-    public RuleTile ruleTile;
     public Tilemap tilemap;
     public Tile backgroundTile;
-    public Tile pipeTile;
+    public PipesConnection pipeTile;
     public RuleTile wallTile;
     public Tile exitTile;
  
@@ -204,7 +203,7 @@ public class PuzzleEngineAssetImport : InteractBase //Will switch to inherit fro
         path.Add(cell);
         isDragging = true;
         RebuildEquation();
-        DrawLine();
+        DrawPipeTile();
         UpdateHud();
     }
 
@@ -220,7 +219,7 @@ public class PuzzleEngineAssetImport : InteractBase //Will switch to inherit fro
         {
             path.RemoveRange(seen + 1, path.Count - seen - 1);
             RebuildEquation();
-            DrawLine();
+            DrawPipeTile();
             UpdateHud();
             return;
         }
@@ -232,7 +231,7 @@ public class PuzzleEngineAssetImport : InteractBase //Will switch to inherit fro
 
         path.Add(cell);
         RebuildEquation();
-        DrawLine();
+        DrawPipeTile();
         UpdateHud();
     }
 
@@ -352,6 +351,31 @@ public class PuzzleEngineAssetImport : InteractBase //Will switch to inherit fro
             line.SetPosition(i, CellToWorld(path[i]) - Vector3.up * 0.05f); 
     }
 
+    private void DrawPipeTile()
+    {
+        tilemap.SwapTile(pipeTile, null);
+        PipesConnection.Connections = new Dictionary<Vector3Int, HashSet<Vector3Int>>();
+        for(int i = 1; i < path.Count; i++)
+        {
+            Vector3Int cellA = (Vector3Int) path[i];
+            Vector3Int cellB = (Vector3Int) path[i-1];
+            tilemap.SetTile((Vector3Int) path[i], pipeTile);
+            if (!PipesConnection.Connections.ContainsKey(cellA))
+                PipesConnection.Connections[cellA] = new HashSet<Vector3Int>();
+            if (!PipesConnection.Connections.ContainsKey(cellB))
+                PipesConnection.Connections[cellB] = new HashSet<Vector3Int>();
+
+            // Link both cells to each other
+            PipesConnection.Connections[cellA].Add(cellB);
+            PipesConnection.Connections[cellB].Add(cellA);
+
+            // Place and refresh only these two specific tiles
+            tilemap.SetTile(cellA, pipeTile);
+            tilemap.SetTile(cellB, pipeTile);
+            tilemap.RefreshTile(cellA);
+            tilemap.RefreshTile(cellB);
+        }
+    }
     private void SetHud(string message)
     {
         if (hudText != null) hudText.text = message;

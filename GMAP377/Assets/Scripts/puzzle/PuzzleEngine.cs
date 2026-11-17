@@ -350,6 +350,8 @@ public class PuzzleEngine : InteractBase //Will switch to inherit from Interacti
             line.SetPosition(i, CellToWorld(path[i]) - Vector3.up * 0.05f); 
     }
 
+    
+
     private void SetHud(string message)
     {
         if (hudText != null) hudText.text = message;
