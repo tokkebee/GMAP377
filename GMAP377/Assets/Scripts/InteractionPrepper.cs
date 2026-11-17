@@ -45,7 +45,7 @@ public class InteractionPrepper : MonoBehaviour
             {
                 if (highlightedObject.TryGetComponent(out InteractBase interact))
                     interact.Click();
-                Debug.Log($"Interacted With {highlightedObject}");
+                //Debug.Log($"Interacted With {highlightedObject}");
             }
             else if (Mouse.current.leftButton.wasReleasedThisFrame) //Left Click Up
             {

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 //This script handles game states.
@@ -8,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour {
     public enum GameState {
         MainMenu, //TODO: implement logic for "Main Menu" state
-        Paused, //TODO: implement logic for "Paused" state
+        Paused,
         Playing,
         Win,
         Lose
@@ -29,6 +30,14 @@ public class GameManager : MonoBehaviour {
     private void Start() {
         ApplyState(currentGameState);
         OnStateChanged?.Invoke(currentGameState);
+    }
+
+    private void Update()
+    {
+        if (InputSystem.actions["Pause"].WasPressedThisFrame())
+        {
+            TogglePause(); //I didn't know whwre to put this so i put it here.
+        }
     }
 
     public void TogglePause() {

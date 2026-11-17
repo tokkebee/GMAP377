@@ -14,7 +14,6 @@ public class BasicMovement : MonoBehaviour
     private Vector3 startPosition;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
-    [SerializeField] private float crouchSpeed;
     [SerializeField] float crouchTime;
     [SerializeField] private float lookSpeed;
     [SerializeField] private float gravity;
@@ -24,6 +23,7 @@ public class BasicMovement : MonoBehaviour
     [SerializeField, Range(0, 30)] private float frequency; //amount the camera bobs
     [SerializeField, Range(0, 0.1f)] private float amplitude; //intensity of each bob
     //Private
+    private float crouchSpeed;
     private float _vertSpeed;
     private Vector2 _lookDir;
     private Vector3 _movement;
@@ -37,12 +37,24 @@ public class BasicMovement : MonoBehaviour
     public static event Action onPlayerCrouch;
     public static event Action onPlayerStand;
 
+    private void OnEnable()
+    {
+        UIManager.OnGamePaused += toggleMenuInteracting;
+        UIManager.OnGameUnPaused += toggleMenuInteracting;
+    }
+
+    private void OnDisable()
+    {
+        UIManager.OnGamePaused -= toggleMenuInteracting;
+        UIManager.OnGameUnPaused -= toggleMenuInteracting;
+    }
 
     private void Start()//Snag CharacterController component on object
     {
         charCon = GetComponent<CharacterController>();
         startPosition = playerCam.transform.localPosition; //set camera start position to the local
         standingHeight = charCon.height; //gets the height of the player
+        crouchSpeed = walkSpeed/2;
     }
     
     private void FixedUpdate()//Calls movement methods on fixed update
@@ -57,7 +69,7 @@ public class BasicMovement : MonoBehaviour
         if ((InputSystem.actions["Crouch"].WasPressedThisFrame()||Input.GetKeyDown(KeyCode.LeftControl))
             && !transitioning)
         {
-            Debug.Log("Crouch");
+            //Debug.Log("Crouch");
             Crouching();
         }
     }
@@ -192,5 +204,11 @@ public class BasicMovement : MonoBehaviour
         playerCam.transform.position.z);
         pos += camHolder.transform.forward * 15.0f;
         return pos;
+    }
+
+    private void toggleMenuInteracting(GameManager.GameState state) //I didn't know what to do with this so here
+    {
+        if (state == GameManager.GameState.Paused) menuInteracting = true;
+        if (state == GameManager.GameState.Playing) menuInteracting = false;
     }
 }

@@ -7,6 +7,7 @@ public class UIManager : MonoBehaviour {
     [SerializeField] private GameObject hudPanel;
     [SerializeField] private GameObject winPanel;
     [SerializeField] private GameObject losePanel;
+    [SerializeField] private GameObject pausePanel;
 
     public static event Action<GameState> OnGamePaused;
     public static event Action<GameState> OnGameUnPaused;
@@ -23,16 +24,19 @@ public class UIManager : MonoBehaviour {
         hudPanel.SetActive(false);
         winPanel.SetActive(false);
         losePanel.SetActive(false);
+        pausePanel.SetActive(false);
 
         switch (newState) {
             case GameState.MainMenu:
                 //awaiting logic
                 break;
             case GameState.Paused:
-                //awaiting logic
+                pausePanel.SetActive(true);
+                OnGamePaused(GameState.Paused);
                 break;
             case GameState.Playing:
                 hudPanel.SetActive(true);
+                OnGameUnPaused(GameState.Playing);
                 break;
             case GameState.Win:
                 winPanel.SetActive(true);

@@ -6,7 +6,7 @@ public class testCarScript : InteractBase
 {
     [SerializeField]private List<string> partsRepaired;
     public List<string> partsBroken;
-    private GameManagerScript gameManager;
+    private PlayerManager playerManager;
     private GameManager stateManager;
 
     private void OnEnable()
@@ -16,7 +16,7 @@ public class testCarScript : InteractBase
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        gameManager = FindAnyObjectByType<GameManagerScript>();
+        playerManager = FindAnyObjectByType<PlayerManager>();
         stateManager = FindAnyObjectByType<GameManager>();
     }
 
@@ -27,7 +27,7 @@ public class testCarScript : InteractBase
 
     public override void Click()
     {
-        foreach (string carPart in gameManager.inventory)
+        foreach (string carPart in playerManager.inventory)
         {
             if (partsBroken.Contains(carPart))
             {
@@ -38,7 +38,7 @@ public class testCarScript : InteractBase
         foreach (string carPart in partsRepaired)
         {
             partsBroken.Remove(carPart);
-            gameManager.inventory.Remove(carPart);
+            playerManager.inventory.Remove(carPart);
         }
         if (partsBroken.Count == 0) stateManager.ChangeState(GameManager.GameState.Win);
     }
