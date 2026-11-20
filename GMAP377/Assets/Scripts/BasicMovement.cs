@@ -9,6 +9,15 @@ public class BasicMovement : MonoBehaviour
     public Camera playerCam;
     public GameObject camHolder;
     public bool menuInteracting; //Not used at the moment, only helpful for UI menus
+    public bool bobEnabled;
+
+    public enum MoveState
+    {
+        Crouching,
+        Running,
+        Walking
+    }
+    public MoveState currentState = MoveState.Walking;
     //Serialized Private
     [SerializeField] private CharacterController charCon;
     private Vector3 startPosition;
@@ -19,16 +28,16 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private float lookSpeed;
     [SerializeField] private float gravity;
     [SerializeField] private float jumpForce;
-    public bool bobEnabled;
-    private bool isCrouching = false;
     [SerializeField, Range(0, 30)] private float frequency; //amount the camera bobs
     [SerializeField, Range(0, 0.1f)] private float amplitude; //intensity of each bob
+    [SerializeField] private float walkVolume, crouchVolume, runVolume;
     //Private
     private float _vertSpeed;
     private Vector2 _lookDir;
     private Vector3 _movement;
     private Vector2 _lookInput;
     private Vector2 _moveInput;
+    private AlertBroadcastManager _alert;
     private float standingHeight;
     private Coroutine crouchRoutine;
     private bool transitioning = false;
@@ -37,6 +46,10 @@ public class BasicMovement : MonoBehaviour
     public static event Action onPlayerCrouch;
     public static event Action onPlayerStand;
 
+    private void Awake()
+    {
+        _alert = FindAnyObjectByType<AlertBroadcastManager>();
+    }
 
     private void Start()//Snag CharacterController component on object
     {
@@ -64,25 +77,47 @@ public class BasicMovement : MonoBehaviour
     
     private void Movement()//Input handling and basic movement calculations
     {
-        if (!menuInteracting)
+        if (menuInteracting) return;
+        //Reads move Vector2 from Input actions (WASD by default)
+        _moveInput = InputSystem.actions["Move"].ReadValue<Vector2>();
+        //Decides speed based on crouching
+        // float speed = currentState ? Mathf.Lerp(walkSpeed, runSpeed, InputSystem.actions["Sprint"]
+        //         .ReadValue<float>()) //Interpolates between walking and running according to shift key
+        //         :crouchSpeed;
+        if (currentState != MoveState.Crouching)
         {
-            //Reads move Vector2 from Input actions (WASD by default)
-            _moveInput = InputSystem.actions["Move"].ReadValue<Vector2>();
-            //Decides speed based on crouching
-            float speed = !isCrouching ? Mathf.Lerp(walkSpeed, runSpeed, InputSystem.actions["Sprint"]
-                    .ReadValue<float>()) //Interpolates between walking and running according to shift key
-                    :crouchSpeed; 
-            //Sets movement floats according to inputs*speed
-            float moveForwards = _moveInput.y * speed * Time.deltaTime;
-            float moveSide = _moveInput.x * speed * Time.deltaTime;
-            
-            //Packs movement into global Vector3, adds vertical calculation (from VertForceCalc())
-            _movement = (transform.forward*moveForwards)+(transform.right*moveSide)
-                +_vertSpeed*transform.up;
-            
-            //Moves player using CharacterController component
-            charCon.Move(_movement);
+            if (InputSystem.actions["Sprint"].ReadValue<float>() > 0) currentState = MoveState.Running;
+            else currentState = MoveState.Walking;
         }
+        
+        float speed, volume;
+        switch (currentState)
+        {
+            case MoveState.Running:
+                speed = runSpeed;
+                volume = runVolume;
+                break;
+            case MoveState.Crouching:
+                speed = crouchSpeed;
+                volume = crouchVolume;
+                break;
+            default:
+                speed = walkSpeed;
+                volume = walkVolume;
+                break;
+        }
+        
+        //Sets movement floats according to inputs*speed
+        float moveForwards = _moveInput.y * speed * Time.deltaTime;
+        float moveSide = _moveInput.x * speed * Time.deltaTime;
+        
+        //Packs movement into global Vector3, adds vertical calculation (from VertForceCalc())
+        _movement = (transform.forward*moveForwards)+(transform.right*moveSide)
+            +_vertSpeed*transform.up;
+        
+        //Moves player using CharacterController component
+        charCon.Move(_movement);
+        if (_movement.magnitude > 0.0001) _alert.Alert(transform.position,volume);
     }
 
     private float VertForceCalc()
@@ -104,8 +139,8 @@ public class BasicMovement : MonoBehaviour
             StopCoroutine(crouchRoutine);
         }
         //Decides wheter to crouch or stand
-        float targetHeight = isCrouching ? standingHeight : standingHeight/2;
-        if (isCrouching)
+        float targetHeight = currentState == MoveState.Crouching ? standingHeight : standingHeight/2;
+        if (currentState == MoveState.Crouching)
         {
             onPlayerStand?.Invoke(); //Invokes standing if the player is already crouching
         }
@@ -129,7 +164,7 @@ public class BasicMovement : MonoBehaviour
             yield return null;
         }
         charCon.height = targetHeight;
-        isCrouching = !isCrouching;
+        currentState = currentState == MoveState.Crouching ? MoveState.Walking : MoveState.Crouching;
         transitioning = false;
     }
     
@@ -167,7 +202,7 @@ public class BasicMovement : MonoBehaviour
     private void CameraBob()
     {
         //Increases/decreases the frequency based on sprinting/crouching/walking
-        float finalFreq = !isCrouching ? Mathf.Lerp(frequency, frequency*2, InputSystem.actions["Sprint"].ReadValue<float>())
+        float finalFreq = currentState != MoveState.Crouching ? Mathf.Lerp(frequency, frequency*2, InputSystem.actions["Sprint"].ReadValue<float>())
         : frequency/2;
         finalFreq = Mathf.Clamp(finalFreq, 0, 30); //make sure we don't have the frequency go too high
         Vector3 pos = Vector3.zero;
