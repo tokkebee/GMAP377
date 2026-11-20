@@ -183,7 +183,7 @@ public class PuzzleEngine : InteractBase //Will switch to inherit from Interacti
 
     private void BeginPath()
     {
-        if (!PointerCell(out Vector2Int cell)) return;
+        if (!PointerCell(out Vector2Int cell)) cell = Vector2Int.zero;//return;
         //if (cell != Vector2Int.zero) return; 
 
         path.Clear();
@@ -222,7 +222,19 @@ public class PuzzleEngine : InteractBase //Will switch to inherit from Interacti
         UpdateHud();
     }
 
-    private void EndPath()
+    public void ButtonControlPath(Vector2Int direction) //Added to allow player to control screens using buttons
+    {
+        if(path.Count == 0) BeginPath();
+        Vector2Int newCell = direction + path[^1];
+        if (newCell.x >= 0 && newCell.x < board.GetLength(0)
+                             && newCell.y >= 0 && newCell.y < board.GetLength(1))
+        {
+            ExtendPath(newCell);
+        }
+        if (path[^1] == exitPos) EndPath();
+    }
+
+    public void EndPath()
     {
         isDragging = false;
         if (path.Count > 0 && path[path.Count - 1] == exitPos)
@@ -337,6 +349,8 @@ public class PuzzleEngine : InteractBase //Will switch to inherit from Interacti
         for (int i = 0; i < path.Count; i++)
             line.SetPosition(i, CellToWorld(path[i]) - Vector3.up * 0.05f); 
     }
+
+    
 
     private void SetHud(string message)
     {

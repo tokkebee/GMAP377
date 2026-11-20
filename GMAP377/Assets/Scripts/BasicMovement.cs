@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +7,7 @@ public class BasicMovement : MonoBehaviour
 {
     //Public
     public Camera playerCam;
+    public GameObject camHolder;
     public bool menuInteracting; //Not used at the moment, only helpful for UI menus
     public bool bobEnabled;
 
@@ -18,25 +20,23 @@ public class BasicMovement : MonoBehaviour
     public MoveState currentState = MoveState.Walking;
     //Serialized Private
     [SerializeField] private CharacterController charCon;
+    private Vector3 startPosition;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
+    [SerializeField] private float crouchSpeed;
+    [SerializeField] float crouchTime;
     [SerializeField] private float lookSpeed;
     [SerializeField] private float gravity;
     [SerializeField] private float jumpForce;
-<<<<<<< Updated upstream
-=======
     [SerializeField, Range(0, 30)] private float frequency; //amount the camera bobs
     [SerializeField, Range(0, 0.1f)] private float amplitude; //intensity of each bob
     [SerializeField] private float walkVolume, crouchVolume, runVolume;
->>>>>>> Stashed changes
     //Private
     private float _vertSpeed;
     private Vector2 _lookDir;
     private Vector3 _movement;
     private Vector2 _lookInput;
     private Vector2 _moveInput;
-<<<<<<< Updated upstream
-=======
     private AlertBroadcastManager _alert;
     private float standingHeight;
     private Coroutine crouchRoutine;
@@ -50,11 +50,12 @@ public class BasicMovement : MonoBehaviour
     {
         _alert = FindAnyObjectByType<AlertBroadcastManager>();
     }
->>>>>>> Stashed changes
 
     private void Start()//Snag CharacterController component on object
     {
         charCon = GetComponent<CharacterController>();
+        startPosition = playerCam.transform.localPosition; //set camera start position to the local
+        standingHeight = charCon.height; //gets the height of the player
     }
     
     private void FixedUpdate()//Calls movement methods on fixed update
@@ -63,7 +64,16 @@ public class BasicMovement : MonoBehaviour
         Movement();
     }
 
-    private void Update() => CameraManagement(); //Manages camera on update
+    private void Update()
+    {
+        CameraManagement(); //Manages camera on update
+        if ((InputSystem.actions["Crouch"].WasPressedThisFrame()||Input.GetKeyDown(KeyCode.LeftControl))
+            && !transitioning)
+        {
+            Debug.Log("Crouch");
+            Crouching();
+        }
+    }
     
     private void Movement()//Input handling and basic movement calculations
     {
@@ -76,27 +86,8 @@ public class BasicMovement : MonoBehaviour
         //         :crouchSpeed;
         if (currentState != MoveState.Crouching)
         {
-<<<<<<< Updated upstream
-            //Reads move Vector2 from Input actions (WASD by default)
-            _moveInput = InputSystem.actions["Move"].ReadValue<Vector2>();
-            
-            float speed = Mathf.Lerp(walkSpeed, runSpeed, InputSystem.actions["Sprint"]
-                .ReadValue<float>());//Interpolates between walking and running according to shift key
-            
-            //Sets movement floats according to inputs*speed
-            float moveForwards = _moveInput.y * speed * Time.deltaTime;
-            float moveSide = _moveInput.x * speed * Time.deltaTime;
-            
-            //Packs movement into global Vector3, adds vertical calculation (from VertForceCalc())
-            _movement = (transform.forward*moveForwards)+(transform.right*moveSide)
-                +_vertSpeed*transform.up;
-            
-            //Moves player using CharacterController component
-            charCon.Move(_movement);
-=======
             if (InputSystem.actions["Sprint"].ReadValue<float>() > 0) currentState = MoveState.Running;
             else currentState = MoveState.Walking;
->>>>>>> Stashed changes
         }
         
         float speed, volume;
@@ -138,8 +129,6 @@ public class BasicMovement : MonoBehaviour
         else _vertSpeed -= gravity * Time.deltaTime;
         return _vertSpeed;
     }
-<<<<<<< Updated upstream
-=======
 
     private void Crouching()
     {
@@ -178,7 +167,6 @@ public class BasicMovement : MonoBehaviour
         currentState = currentState == MoveState.Crouching ? MoveState.Walking : MoveState.Crouching;
         transitioning = false;
     }
->>>>>>> Stashed changes
     
     void CameraManagement()
     {
@@ -191,18 +179,25 @@ public class BasicMovement : MonoBehaviour
             _lookDir.y -= _lookInput.y * Time.deltaTime * lookSpeed;
             
             //Ensure player is not able to do flips (Stop them from looking too far down or too far up)
-            _lookDir.y = Mathf.Clamp(_lookDir.y, -90f, 90f);
+            _lookDir.y = Mathf.Clamp(_lookDir.y, -80f, 90f);
             
             //Turn entire player on y axis according to _lookDir.x
             transform.localRotation = Quaternion.Euler(0f, _lookDir.x, 0f);
             
             //Turn camera on local x axis according to _lookDir.y
-            playerCam.transform.localRotation = Quaternion.Euler(_lookDir.y, 0f, 0f);
+            camHolder.transform.localRotation = Quaternion.Euler(_lookDir.y, 0f, 0f);
+        }
+        //camera bobbing is enabled to start the camera bob
+        if (bobEnabled)
+        {
+            if (InputSystem.actions["Move"].ReadValue<Vector2>() != Vector2.zero) //Bob if moving
+            {
+                CameraBob();
+            }
+            ResetPosition(); //put the camera back
+            playerCam.transform.LookAt(FocusTarget()); //stablinzing
         }
     }
-<<<<<<< Updated upstream
-}
-=======
 
     private void CameraBob()
     {
@@ -234,4 +229,3 @@ public class BasicMovement : MonoBehaviour
         return pos;
     }
 }
->>>>>>> Stashed changes

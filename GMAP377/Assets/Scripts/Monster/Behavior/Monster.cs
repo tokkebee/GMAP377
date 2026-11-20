@@ -1,0 +1,165 @@
+using System.Collections.Generic;
+using Pathfinding.BehaviourTrees;
+using UnityEngine;
+using UnityEngine.AI;
+
+//This script constructs and processes the Monster Behavior tree
+//Dependant on Node.cs and Strategies.cs
+//Expecting to be or is currently hooked up to the following
+    //monster animation systems
+        //LegAnimation.cs (placeholder)
+    //player manager
+    //game manager
+
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(MonsterVision))]
+public class Monster : MonoBehaviour
+{
+    [SerializeField] List<Transform> waypoints = new();
+    [SerializeField] Transform player; //temporary. will be replaced by more sophisticated detection system later
+    [SerializeField] private MonsterVision vision;
+    [SerializeField] private float searchDuration = 4f;
+
+    [Header("Attack Settings")]
+    [Tooltip("Where the leg lands, in the monster's local space (z = forward). Match this to your attack pose.")]
+    [SerializeField] private Vector3 strikeOffset = new Vector3(0f, 0f, 1.5f);
+    private Vector3 StrikePoint => transform.position + transform.rotation * strikeOffset;
+    [Tooltip("How close the STRIKE POINT must be to the player to attack (not the monster's pivot).")]
+    [SerializeField] private float attackRange = 0.6f;
+    [SerializeField] private float attackDuration = 0.7f;
+    [SerializeField] private float turnSpeed = 360f;
+    [SerializeField] private float attackRecoveryDuration = 0.4f;
+    [SerializeField] private float attackCooldown = 1f;
+
+    [Header("Movement Settings")]
+    [SerializeField] private float patrolSpeed = 2f;
+    [SerializeField] private float chaseSpeed = 5f;
+    [SerializeField] private float investigationSpeed = 3f;
+
+    private NavMeshAgent agent;
+    private BehaviourTree tree;
+
+    void Awake() {
+        agent = GetComponent<NavMeshAgent>();
+        vision = GetComponent<MonsterVision>();
+
+        //Constructing Behavior Tree
+
+        //Creating the main behaviors
+        //highest to lowest priority: attack --> (hold) --> chase --> investigate --> patrol
+        AttackStrategy attackStrategy = new AttackStrategy(agent, attackDuration, attackRecoveryDuration, attackCooldown);
+        Sequence attack = new Sequence("Attack", 40);
+        attack.AddChild(new Leaf("CanSeePlayer", new Condition(() => vision.canSeePlayer)));
+        attack.AddChild(new Leaf("IsPlayerInAttackRange", new Condition(() => IsPlayerInAttackRange())));
+        attack.AddChild(new Leaf("EnteringAttack",
+            new ActionStrategy(() =>
+                Debug.Log("Monster entering attacking behavior.", this
+            ))));
+        attack.AddChild(new Leaf("PerformAttack", attackStrategy));
+
+        //priority 35: in range but attack is on cooldown, so stay put
+        ReactiveSequence hold = new ReactiveSequence("HoldPosition", 35);
+        hold.AddChild(new Leaf("CanSeePlayer", new Condition(() => vision.canSeePlayer)));
+        hold.AddChild(new Leaf("IsPlayerInAttackRange", new Condition(() => IsPlayerInAttackRange())));
+        hold.AddChild(new Leaf("Hold", new HoldPositionStrategy(agent)));
+
+        //priority 30: chase when player is visible
+        ReactiveSequence  chase = new ReactiveSequence ("Chase", 30);
+        chase.AddChild(new Leaf("ShouldChase", new Condition(() => vision.shouldChase && vision.canSeePlayer)));
+        // chase.AddChild(new Leaf("ShouldChase",
+        //     new Condition(() =>
+        //     {
+        //         bool shouldInvestigate =
+        //             vision.shouldChase &&
+        //             vision.canSeePlayer;
+
+        //         if (vision.shouldChase)
+        //             Debug.Log("Monster entering chasing behavior");
+
+        //         return shouldInvestigate;
+        //     })));
+        // chase.AddChild(new Leaf("CanChase", new Condition(() => vision.shouldChase && vision.canSeePlayer)));
+        chase.AddChild(new Leaf("MoveToPlayer", new MoveToPositionStrategy(agent, () => GetStrikeStandPosition(), chaseSpeed)));
+
+        //priority 20: investigate
+        //todo. feeling of investigation is lackluster
+        Sequence investigate = new Sequence("Investigate", 20);
+        investigate.AddChild(new Leaf("ShouldInvestigate",
+            new Condition(() =>
+            {
+                bool shouldInvestigate =
+                    vision.shouldChase &&
+                    !vision.canSeePlayer &&
+                    vision.hasLastKnownPosition;
+
+                if (shouldInvestigate)
+                    Debug.Log("Monster entering investigation behavior");
+
+                return shouldInvestigate;
+            })));
+        investigate.AddChild(new Leaf("ShouldChase", new Condition(() => vision.shouldChase && !vision.canSeePlayer && vision.hasLastKnownPosition)));
+        investigate.AddChild(new Leaf("MoveToLastKnownPosition", new MoveToPositionStrategy(agent, () => vision.lastKnownPosition, investigationSpeed)));
+        investigate.AddChild(new Leaf("SearchArea", new SearchStrategy(searchDuration)));
+        investigate.AddChild(new Leaf("ClearAlert", new ActionStrategy(() => vision.ClearAlert())));
+
+        //priority 10: patrol when no active alert
+        Leaf patrol = new Leaf("Patrol", new PatrolStrategy(transform, agent, waypoints, patrolSpeed), 10);
+
+
+        //Creating "Priority Selector", which monster quickly switches behaviors if conditions allow for a higher priority behavior
+        PrioritySelector behaviors = new PrioritySelector("MonsterBehaviors");
+
+        behaviors.AddChild(attack);
+        behaviors.AddChild(hold);
+        behaviors.AddChild(chase);
+        behaviors.AddChild(investigate);
+        behaviors.AddChild(patrol);
+
+        tree = new BehaviourTree("Monster");
+        tree.AddChild(behaviors);
+
+        agent.updateRotation = false;
+    }
+
+    void Update() {
+        tree.Process();
+        bool facingPlayer = FacePlayerIfClose();
+        agent.updateRotation = !facingPlayer;
+    }
+
+    private bool FacePlayerIfClose() {
+        if (!vision.canSeePlayer) return false;
+
+        Vector3 toPlayer = player.position - transform.position;
+        toPlayer.y = 0f;
+        if (toPlayer.sqrMagnitude < 0.0001f) return false;
+        if (toPlayer.magnitude > strikeOffset.magnitude + 1f) return false; // only when near
+
+        Quaternion target = Quaternion.LookRotation(toPlayer);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, target, turnSpeed * Time.deltaTime);
+
+        return true;
+    }
+
+    private bool IsPlayerInAttackRange() {
+        Vector3 delta = StrikePoint - player.position;
+        delta.y = 0f; // ignore height differences
+        return delta.sqrMagnitude <= attackRange * attackRange;
+    }
+
+    private Vector3 GetStrikeStandPosition() {
+
+        Vector3 toPlayer = player.position - transform.position;
+        toPlayer.y = 0f;
+        if (toPlayer.sqrMagnitude < 0.001f) return transform.position;
+
+        Vector3 flatOffset = strikeOffset;
+        flatOffset.y = 0f;
+        return player.position - toPlayer.normalized * flatOffset.magnitude;
+    }
+
+    private void OnDrawGizmosSelected() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(StrikePoint, attackRange);
+    }
+}
