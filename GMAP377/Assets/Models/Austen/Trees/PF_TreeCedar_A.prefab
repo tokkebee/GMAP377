@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4480056089541393698}
   - component: {fileID: 1665766580966587460}
   - component: {fileID: 4522428116928336516}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PF_TreeCedar_A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
